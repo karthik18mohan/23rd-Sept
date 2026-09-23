@@ -1,62 +1,58 @@
 # 5 Years of Us ❤️
 
-A mobile-first interactive anniversary microsite built for 23 September.
+Interactive 5-year anniversary website.
 
-## What is included
+## 🚨 You only need to edit one folder
 
-- Hold-to-open gift intro with heart burst
-- Live relationship duration counter from 23 Sep 2021
-- Animated rewind into a five-chapter relationship timeline
-- 15 photo-driven memory cards with graceful placeholders
-- Five hidden-heart Easter eggs saved in local storage
-- Then-vs-now draggable comparison
-- Interactive vinyl/audio player
-- 25 tappable reasons-I-love-you cards
-- Animated memory mosaic
-- “Our little things” scrapbook
-- Year 6–10 future Polaroids
-- Tap-to-open anniversary letter
-- Full-screen finale and Chapter 6 epilogue
-- Responsive/mobile-first layout and reduced-motion accessibility
+# `EDIT_HERE/`
 
-## Personalize
+Everything personal is inside it:
 
-Edit `content.js` only: partner name, chapter text, hidden-heart secrets, the 25 reasons, “our little things,” and the final letter.
+```
+EDIT_HERE/
+├── README.md          ← START HERE
+├── content.js         ← all names, text, jokes, quiz, letter, etc.
+├── photos/            ← every normal photo
+├── messages/          ← WhatsApp/chat screenshots
+└── music/             ← song or voice note
+```
 
-The anniversary date is already configured as `2021-09-23`.
+Do **not** edit `index.html`, `script.js`, or `styles.css` just to personalize the gift.
 
-## Add your photos
+Inside `EDIT_HERE/content.js`, search for **EDIT:** and replace the placeholders.
 
-Upload these into `assets/`:
+## Main flow
 
-- `hero.jpg`, `then.jpg`, `now.jpg`, `finale.jpg`
-- `2021-1.jpg` through `2021-3.jpg`
-- `2022-1.jpg` through `2022-3.jpg`
-- `2023-1.jpg` through `2023-3.jpg`
-- `2024-1.jpg` through `2024-3.jpg`
-- `2025-1.jpg`
-- `2026-1.jpg`, `2026-2.jpg`
+The site is intentionally **not year-by-year** anymore.
 
-Missing photos fall back to styled memory placeholders, so the experience never shows broken-image icons.
+1. Hold-to-open gift
+2. Cover + automatic live relationship counter
+3. **This Is Us** photo montage
+4. **Things I Know About You**
+5. **Things Only We Understand** / inside jokes
+6. **You, According to My Camera Roll**
+7. **Messages I Never Want to Lose**
+8. **What Changed Because of You**
+9. Interactive **Pick One** couple quiz
+10. Music / voice-note player
+11. **25 Things I Never Want to Forget**
+12. **Museum of Us**
+13. Then ↔ Now photo slider
+14. Five hidden-heart secrets
+15. **The Future** — memories without photos yet
+16. Opening anniversary letter
+17. Finale + **Chapter 6**
 
-## Add music / voice note
-
-Upload audio as `assets/our-song.mp3`. Playback starts only after the record player is tapped, matching browser autoplay rules.
+Missing media shows a styled placeholder with the exact filename you need, so you can personalize the site gradually.
 
 ## Run locally
-
-No build step is required:
 
 ```bash
 python3 -m http.server 3000
 ```
 
-Then open `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-## Deploy
+## Privacy
 
-Import the repo into Vercel as a static site, or serve it directly with GitHub Pages.
-
-## Privacy note
-
-This repository is currently **public**. If you upload private couple photos here, those files are public too. Make the repo private before adding sensitive media if you want the photos to stay private.
+This repository is currently **public**. If the photos, chats or audio are private, make the repository private before uploading them.
