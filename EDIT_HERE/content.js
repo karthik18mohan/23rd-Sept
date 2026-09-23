@@ -155,8 +155,8 @@ window.ANNIVERSARY = {
 
   // 11 — THEN / NOW
   thenNow: {
-    then: "./EDIT_HERE/ics/2.jpeg",
-    now: "./EDIT_HERE/ics/26.jpeg"
+    then: "./EDIT_HERE/ics/26.jpeg",
+    now: "./EDIT_HERE/ics/2.jpeg"
   },
 
   // 12 — FUTURE
