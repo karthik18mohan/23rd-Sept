@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#10080d" />
+  <meta name="description" content="Five years of us — a tiny interactive anniversary story." />
+  <title>5 Years of Us ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=Patrick+Hand&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="locked">
+  <div class="noise" aria-hidden="true"></div>
+  <div id="heartTrail" class="heart-trail" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <main>
+    <section id="intro" class="scene intro-scene">
+      <div class="stars" aria-hidden="true"></div>
+      <div class="intro-copy reveal-now">
+        <span class="eyebrow">A tiny thing made only for you</span>
+        <h1>Hey <span data-partner>my love</span> <span class="pulse-heart">♥</span></h1>
+        <p>I made something for you.</p>
+        <p class="sound-note">Turn your sound on for the full experience 🎧</p>
+        <button id="holdButton" class="hold-button" type="button" aria-label="Hold to open our story">
+          <span class="hold-ring" aria-hidden="true"></span>
+          <span class="hold-heart">♡</span>
+          <span class="hold-label">hold to open</span>
+        </button>
+      </div>
+      <div id="burst" class="burst" aria-hidden="true"></div>
+    </section>
+
+    <section id="together" class="scene light-scene first-after-intro">
+      <div class="section-wrap centered narrow">
+        <div class="polaroid hero-polaroid reveal">
+          <div class="photo photo-main" data-photo="hero"><span>our favourite photo</span></div>
+          <div class="tape"></div>
+          <p>You + Me</p>
+        </div>
+        <span class="eyebrow dark reveal">And somehow…</span>
+        <h2 class="display reveal">it has been <em>five years.</em></h2>
+        <p class="counter-label reveal">Together for</p>
+        <div id="loveCounter" class="counter-grid reveal" aria-live="polite"></div>
+        <p class="scribble reveal">That’s a lot of time for you to tolerate me 😂❤️</p>
+        <a class="scroll-cue reveal" href="#rewind">scroll for our story ↓</a>
+      </div>
+    </section>
+
+    <section id="rewind" class="scene rewind-scene dark-scene">
+      <div class="section-wrap centered">
+        <span class="eyebrow reveal">But before everything else</span>
+        <h2 class="display reveal">Let’s rewind.</h2>
+        <div class="rewind-machine reveal" aria-label="Rewinding through our years">
+          <div class="rewind-line"></div>
+          <div id="rewindYears" class="rewind-years"></div>
+        </div>
+        <p class="muted reveal">Back to the chapter where “us” was still brand new.</p>
+      </div>
+    </section>
+
+    <section id="story" class="story-root"></section>
+
+    <section id="then-now" class="scene blush-scene">
+      <div class="section-wrap">
+        <span class="eyebrow dark reveal">Five years later</span>
+        <h2 class="display reveal">Different versions of us.<br /><em>Still us.</em></h2>
+        <div class="compare-card reveal">
+          <div class="compare-frame" id="compareFrame">
+            <div class="photo compare-photo old-photo" data-photo="then"><span>then · 2021</span></div>
+            <div class="compare-new" id="compareNew">
+              <div class="photo compare-photo new-photo" data-photo="now"><span>now · 2026</span></div>
+            </div>
+            <div class="compare-divider" id="compareDivider"><span>↔</span></div>
+          </div>
+          <label for="compareRange">Drag through time</label>
+          <input id="compareRange" type="range" min="0" max="100" value="52" aria-label="Compare our first and latest photo" />
+        </div>
+      </div>
+    </section>
+
+    <section id="secrets" class="scene dark-scene secret-scene">
+      <div class="section-wrap centered narrow">
+        <span class="eyebrow reveal">A little side quest</span>
+        <h2 class="display reveal">Did you notice the tiny hearts?</h2>
+        <p class="muted reveal">There are five hidden across our story. Every one keeps a small secret.</p>
+        <div class="heart-score reveal"><span id="heartScore">0</span> / 5 found</div>
+        <div id="secretMessage" class="secret-message reveal">Find one and tap it ♥</div>
+      </div>
+    </section>
+
+    <section id="audio" class="scene record-scene light-scene">
+      <div class="section-wrap split">
+        <div class="reveal">
+          <span class="eyebrow dark">Some things never made it into the photos</span>
+          <h2 class="display">So I saved you <em>a little sound.</em></h2>
+          <p class="body-copy">Drop your song or a voice note into the assets folder later. The record button is already wired for it.</p>
+        </div>
+        <button id="recordButton" class="record-player reveal" type="button" aria-label="Play our audio">
+          <span class="record-disc"><span class="record-label">us</span></span>
+          <span class="record-arm"></span>
+          <span id="audioStatus" class="record-caption">tap to play ♫</span>
+        </button>
+        <audio id="ourAudio" preload="metadata" src="./assets/our-song.mp3"></audio>
+      </div>
+    </section>
+
+    <section id="reasons" class="scene reasons-scene">
+      <div class="section-wrap">
+        <span class="eyebrow reveal">5 years × 5 reasons</span>
+        <h2 class="display reveal">25 tiny reasons<br />I love you.</h2>
+        <p class="muted reveal">Tap any heart. No particular order. Just like us.</p>
+        <div id="reasonGrid" class="reason-grid reveal"></div>
+        <div id="reasonModal" class="reason-modal" aria-hidden="true">
+          <button id="reasonClose" type="button" aria-label="Close reason">×</button>
+          <span id="reasonNumber"></span>
+          <p id="reasonText"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="mosaic" class="scene light-scene mosaic-scene">
+      <div class="section-wrap centered">
+        <span class="eyebrow dark reveal">Five years looks something like this</span>
+        <h2 class="display reveal">A thousand little moments.</h2>
+        <div id="mosaicGrid" class="mosaic-grid reveal" aria-label="Our memory mosaic"></div>
+      </div>
+    </section>
+
+    <section id="little-things" class="scene scrapbook-scene">
+      <div class="section-wrap">
+        <span class="eyebrow dark reveal">The stuff that is only ours</span>
+        <h2 class="display reveal">Our little things.</h2>
+        <div id="littleThingsGrid" class="little-things-grid"></div>
+      </div>
+    </section>
+
+    <section id="future" class="scene future-scene dark-scene">
+      <div class="section-wrap centered">
+        <p class="future-prelude reveal">But my favourite part…</p>
+        <h2 class="display reveal">hasn’t happened yet.</h2>
+        <div class="future-polaroids" id="futurePolaroids"></div>
+      </div>
+    </section>
+
+    <section id="letter" class="scene letter-scene light-scene">
+      <div class="section-wrap centered narrow">
+        <span class="eyebrow dark reveal">One last thing</span>
+        <h2 class="display reveal">This part is just for you.</h2>
+        <button id="envelope" class="envelope reveal" type="button" aria-expanded="false">
+          <span class="envelope-back"></span>
+          <span class="letter-paper">
+            <span class="letter-inner">
+              <strong>My <span data-partner>love</span>,</strong>
+              <span id="letterBody"></span>
+              <em>Always yours,<br /><span data-self>Karthik</span> ❤️</em>
+            </span>
+          </span>
+          <span class="envelope-front"></span>
+          <span class="envelope-flap"></span>
+          <span class="seal">♥</span>
+        </button>
+        <p class="tap-note reveal">tap the envelope</p>
+      </div>
+    </section>
+
+    <section id="finale" class="scene finale-scene dark-scene">
+      <div class="finale-bg photo" data-photo="finale"></div>
+      <div class="finale-overlay"></div>
+      <div class="finale-copy section-wrap centered">
+        <p class="final-stat reveal">5 YEARS</p>
+        <p class="final-stat reveal">1,825+ DAYS</p>
+        <p class="final-stat reveal">THOUSANDS OF MEMORIES</p>
+        <h2 class="display reveal">Still my favourite person. <span>❤️</span></h2>
+        <h3 class="reveal">Happy 5th Anniversary, <span data-partner>my love</span>.</h3>
+        <p class="signature reveal">I love you. — <span data-self>Karthik</span></p>
+        <button id="chapterSix" class="chapter-six reveal" type="button">Wait… one more thing 👀</button>
+      </div>
+      <div id="confetti" class="confetti" aria-hidden="true"></div>
+    </section>
+
+    <section id="epilogue" class="epilogue" aria-hidden="true">
+      <button id="closeEpilogue" type="button" aria-label="Close final surprise">×</button>
+      <div class="epilogue-inner">
+        <span class="eyebrow">Our next chapter</span>
+        <div class="film-strip" id="filmStrip"></div>
+        <h2>See you in Chapter 6. ❤️</h2>
+      </div>
+    </section>
+  </main>
+
+  <template id="hiddenHeartTemplate">
+    <button class="hidden-heart" type="button" aria-label="Hidden heart">♥</button>
+  </template>
+
+  <script src="./content.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
