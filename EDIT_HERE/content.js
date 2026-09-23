@@ -7,8 +7,8 @@
 window.ANNIVERSARY = {
   // 00 — BASIC DETAILS
   selfName: "Karthik",
-  partnerName: "my love", // EDIT: her name / nickname
-  anniversaryDate: "2021-09-23T00:00:00+05:30", // EDIT if needed
+  partnerName: "jaanu", // EDIT: her name / nickname
+  anniversaryDate: "2021-09-23T20:40:00+05:30", // EDIT if needed
 
   opening: {
     tinyLine: "A tiny thing made only for you",
@@ -38,12 +38,12 @@ window.ANNIVERSARY = {
 
   // 03 — THINGS I KNOW ABOUT YOU
   thingsIKnow: [
-    { emoji: "☕", label: "Your order", value: "EDIT: her usual coffee / food order" },
-    { emoji: "😤", label: "Your angry face means", value: "EDIT: what it actually means" },
-    { emoji: "🍟", label: "Your favourite thing to steal", value: "EDIT: fries / hoodie / etc." },
-    { emoji: "💬", label: "A sentence you say constantly", value: "EDIT: exact phrase" },
-    { emoji: "😂", label: "The thing that always makes you laugh", value: "EDIT" },
-    { emoji: "⚠️", label: "Most dangerous sentence", value: "EDIT: e.g. “I’m not hungry.”" }
+    { emoji: "☕", label: "Your order", value: "without tomato" },
+    { emoji: "😤", label: "Your angry face means", value: "hmmmmmmm" },
+    { emoji: "🍟", label: "Your favourite thing to steal", value: "hoodie" },
+    { emoji: "💬", label: "A sentence you say constantly", value: "babba hogana" },
+    { emoji: "😂", label: "The thing that always makes you laugh", value: "dudu bubu reels" },
+    { emoji: "⚠️", label: "Most dangerous message", value: "👍" }
   ],
 
   // 04 — THINGS ONLY WE UNDERSTAND
