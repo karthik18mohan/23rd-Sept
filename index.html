@@ -20,10 +20,10 @@
     <section id="intro" class="scene intro-scene">
       <div class="stars" aria-hidden="true"></div>
       <div class="intro-copy reveal-now">
-        <span class="eyebrow">A tiny thing made only for you</span>
-        <h1>Hey <span data-partner>my love</span> <span class="pulse-heart">♥</span></h1>
-        <p>I made something for you.</p>
-        <p class="sound-note">Turn your sound on for the full experience 🎧</p>
+        <span id="openingTiny" class="eyebrow"></span>
+        <h1><span id="openingHello">Hey</span> <span data-partner>my love</span> <span class="pulse-heart">♥</span></h1>
+        <p id="openingLine1"></p>
+        <p id="openingLine2" class="sound-note"></p>
         <button id="holdButton" class="hold-button" type="button" aria-label="Hold to open our story">
           <span class="hold-ring" aria-hidden="true"></span>
           <span class="hold-heart">♡</span>
@@ -33,50 +33,131 @@
       <div id="burst" class="burst" aria-hidden="true"></div>
     </section>
 
-    <section id="together" class="scene light-scene first-after-intro">
+    <section id="cover" class="scene light-scene first-after-intro">
       <div class="section-wrap centered narrow">
         <div class="polaroid hero-polaroid reveal">
-          <div class="photo photo-main" data-photo="hero"><span>our favourite photo</span></div>
+          <div id="coverPhoto" class="photo photo-main"><span>00-cover.jpg</span></div>
           <div class="tape"></div>
-          <p>You + Me</p>
+          <p id="coverCaption">You + Me</p>
         </div>
-        <span class="eyebrow dark reveal">And somehow…</span>
-        <h2 class="display reveal">it has been <em>five years.</em></h2>
+        <span class="eyebrow dark reveal">Five years of us</span>
+        <h2 id="coverTitle" class="display reveal"></h2>
+        <p id="coverAfter" class="scribble reveal"></p>
         <p class="counter-label reveal">Together for</p>
         <div id="loveCounter" class="counter-grid reveal" aria-live="polite"></div>
-        <p class="scribble reveal">That’s a lot of time for you to tolerate me 😂❤️</p>
-        <a class="scroll-cue reveal" href="#rewind">scroll for our story ↓</a>
+        <a class="scroll-cue reveal" href="#this-is-us">start with us ↓</a>
       </div>
     </section>
 
-    <section id="rewind" class="scene rewind-scene dark-scene">
-      <div class="section-wrap centered">
-        <span class="eyebrow reveal">But before everything else</span>
-        <h2 class="display reveal">Let’s rewind.</h2>
-        <div class="rewind-machine reveal" aria-label="Rewinding through our years">
-          <div class="rewind-line"></div>
-          <div id="rewindYears" class="rewind-years"></div>
+    <section id="this-is-us" class="scene montage-scene dark-scene">
+      <div class="section-wrap">
+        <span class="eyebrow reveal">No timeline. No perfect order.</span>
+        <h2 class="display reveal">This is <em>us.</em></h2>
+        <p class="muted reveal">A few frames that somehow explain us better than dates ever could.</p>
+        <div id="usMontage" class="us-montage"></div>
+      </div>
+    </section>
+
+    <section id="things-i-know" class="scene light-scene">
+      <div class="section-wrap">
+        <span class="eyebrow dark reveal">Things I know without asking anymore</span>
+        <h2 class="display reveal">I know <em>you.</em></h2>
+        <div id="knowGrid" class="know-grid"></div>
+      </div>
+    </section>
+
+    <section id="inside-jokes" class="scene scrapbook-scene">
+      <div class="section-wrap">
+        <span class="eyebrow dark reveal">Completely meaningless to everyone else</span>
+        <h2 class="display reveal">Things only we understand.</h2>
+        <div id="jokeGrid" class="joke-grid"></div>
+      </div>
+    </section>
+
+    <section id="camera-roll" class="scene blush-scene">
+      <div class="section-wrap">
+        <span class="eyebrow dark reveal">You, according to my camera roll</span>
+        <h2 class="display reveal">The photos I keep coming back to.</h2>
+        <div id="cameraGroups" class="camera-groups"></div>
+      </div>
+    </section>
+
+    <section id="messages" class="scene dark-scene message-scene">
+      <div class="section-wrap">
+        <span class="eyebrow reveal">Some messages I never want to lose</span>
+        <h2 class="display reveal">Romance.<br /><em>Apparently.</em></h2>
+        <div id="messageStrip" class="message-strip"></div>
+      </div>
+    </section>
+
+    <section id="changed" class="scene changed-scene light-scene">
+      <div class="section-wrap centered narrow">
+        <span class="eyebrow dark reveal">What changed because of you</span>
+        <div id="changedLines" class="changed-lines"></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="scene quiz-scene dark-scene">
+      <div class="section-wrap centered narrow">
+        <span class="eyebrow reveal">A highly scientific relationship test</span>
+        <h2 class="display reveal">Pick one.</h2>
+        <div id="quizCard" class="quiz-card reveal"></div>
+      </div>
+    </section>
+
+    <section id="audio" class="scene record-scene light-scene">
+      <div class="section-wrap split">
+        <div class="reveal">
+          <span class="eyebrow dark">Some things sound better than they read</span>
+          <h2 class="display">So I saved you <em>a little sound.</em></h2>
+          <p id="audioLabel" class="body-copy"></p>
         </div>
-        <p class="muted reveal">Back to the chapter where “us” was still brand new.</p>
+        <button id="recordButton" class="record-player reveal" type="button" aria-label="Play our audio">
+          <span class="record-disc"><span class="record-label">us</span></span>
+          <span class="record-arm"></span>
+          <span id="audioStatus" class="record-caption">tap to play ♫</span>
+        </button>
+        <audio id="ourAudio" preload="metadata"></audio>
       </div>
     </section>
 
-    <section id="story" class="story-root"></section>
+    <section id="tiny-things" class="scene reasons-scene">
+      <div class="section-wrap">
+        <span class="eyebrow reveal">Not grand gestures. The tiny stuff.</span>
+        <h2 class="display reveal">25 things I never want to forget.</h2>
+        <p class="muted reveal">Tap any heart.</p>
+        <div id="reasonGrid" class="reason-grid reveal"></div>
+        <div id="reasonModal" class="reason-modal" aria-hidden="true">
+          <button id="reasonClose" type="button" aria-label="Close">×</button>
+          <span id="reasonNumber"></span>
+          <p id="reasonText"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="museum" class="scene museum-scene">
+      <div class="section-wrap">
+        <span class="eyebrow dark reveal">If our relationship had a museum</span>
+        <h2 class="display reveal">The Museum of Us.</h2>
+        <p class="museum-intro reveal">Six completely ordinary things that became ours.</p>
+        <div id="museumGrid" class="museum-grid"></div>
+      </div>
+    </section>
 
     <section id="then-now" class="scene blush-scene">
       <div class="section-wrap">
-        <span class="eyebrow dark reveal">Five years later</span>
-        <h2 class="display reveal">Different versions of us.<br /><em>Still us.</em></h2>
+        <span class="eyebrow dark reveal">Look at us</span>
+        <h2 class="display reveal">Different versions.<br /><em>Still us.</em></h2>
         <div class="compare-card reveal">
-          <div class="compare-frame" id="compareFrame">
-            <div class="photo compare-photo old-photo" data-photo="then"><span>then · 2021</span></div>
+          <div class="compare-frame">
+            <div id="thenPhoto" class="photo compare-photo"><span>07-then.jpg</span></div>
             <div class="compare-new" id="compareNew">
-              <div class="photo compare-photo new-photo" data-photo="now"><span>now · 2026</span></div>
+              <div id="nowPhoto" class="photo compare-photo"><span>07-now.jpg</span></div>
             </div>
             <div class="compare-divider" id="compareDivider"><span>↔</span></div>
           </div>
-          <label for="compareRange">Drag through time</label>
-          <input id="compareRange" type="range" min="0" max="100" value="52" aria-label="Compare our first and latest photo" />
+          <label for="compareRange">drag through time</label>
+          <input id="compareRange" type="range" min="0" max="100" value="52" aria-label="Compare then and now" />
         </div>
       </div>
     </section>
@@ -84,64 +165,19 @@
     <section id="secrets" class="scene dark-scene secret-scene">
       <div class="section-wrap centered narrow">
         <span class="eyebrow reveal">A little side quest</span>
-        <h2 class="display reveal">Did you notice the tiny hearts?</h2>
-        <p class="muted reveal">There are five hidden across our story. Every one keeps a small secret.</p>
+        <h2 class="display reveal">Did you find the tiny hearts?</h2>
+        <p class="muted reveal">Five are hiding around the page. Each one has something small to tell you.</p>
         <div class="heart-score reveal"><span id="heartScore">0</span> / 5 found</div>
         <div id="secretMessage" class="secret-message reveal">Find one and tap it ♥</div>
       </div>
     </section>
 
-    <section id="audio" class="scene record-scene light-scene">
-      <div class="section-wrap split">
-        <div class="reveal">
-          <span class="eyebrow dark">Some things never made it into the photos</span>
-          <h2 class="display">So I saved you <em>a little sound.</em></h2>
-          <p class="body-copy">Drop your song or a voice note into the assets folder later. The record button is already wired for it.</p>
-        </div>
-        <button id="recordButton" class="record-player reveal" type="button" aria-label="Play our audio">
-          <span class="record-disc"><span class="record-label">us</span></span>
-          <span class="record-arm"></span>
-          <span id="audioStatus" class="record-caption">tap to play ♫</span>
-        </button>
-        <audio id="ourAudio" preload="metadata" src="./assets/our-song.mp3"></audio>
-      </div>
-    </section>
-
-    <section id="reasons" class="scene reasons-scene">
-      <div class="section-wrap">
-        <span class="eyebrow reveal">5 years × 5 reasons</span>
-        <h2 class="display reveal">25 tiny reasons<br />I love you.</h2>
-        <p class="muted reveal">Tap any heart. No particular order. Just like us.</p>
-        <div id="reasonGrid" class="reason-grid reveal"></div>
-        <div id="reasonModal" class="reason-modal" aria-hidden="true">
-          <button id="reasonClose" type="button" aria-label="Close reason">×</button>
-          <span id="reasonNumber"></span>
-          <p id="reasonText"></p>
-        </div>
-      </div>
-    </section>
-
-    <section id="mosaic" class="scene light-scene mosaic-scene">
-      <div class="section-wrap centered">
-        <span class="eyebrow dark reveal">Five years looks something like this</span>
-        <h2 class="display reveal">A thousand little moments.</h2>
-        <div id="mosaicGrid" class="mosaic-grid reveal" aria-label="Our memory mosaic"></div>
-      </div>
-    </section>
-
-    <section id="little-things" class="scene scrapbook-scene">
-      <div class="section-wrap">
-        <span class="eyebrow dark reveal">The stuff that is only ours</span>
-        <h2 class="display reveal">Our little things.</h2>
-        <div id="littleThingsGrid" class="little-things-grid"></div>
-      </div>
-    </section>
-
     <section id="future" class="scene future-scene dark-scene">
       <div class="section-wrap centered">
-        <p class="future-prelude reveal">But my favourite part…</p>
-        <h2 class="display reveal">hasn’t happened yet.</h2>
-        <div class="future-polaroids" id="futurePolaroids"></div>
+        <p class="future-prelude reveal">I spent all this time talking about memories…</p>
+        <h2 class="display reveal">but my favourite part<br /><em>doesn’t have photos yet.</em></h2>
+        <div id="futurePolaroids" class="future-polaroids"></div>
+        <p class="future-ending reveal">Chapter 6 starts tomorrow. ❤️</p>
       </div>
     </section>
 
@@ -167,14 +203,14 @@
     </section>
 
     <section id="finale" class="scene finale-scene dark-scene">
-      <div class="finale-bg photo" data-photo="finale"></div>
+      <div id="finaleBg" class="finale-bg photo"></div>
       <div class="finale-overlay"></div>
       <div class="finale-copy section-wrap centered">
         <p class="final-stat reveal">5 YEARS</p>
-        <p class="final-stat reveal">1,825+ DAYS</p>
-        <p class="final-stat reveal">THOUSANDS OF MEMORIES</p>
-        <h2 class="display reveal">Still my favourite person. <span>❤️</span></h2>
-        <h3 class="reveal">Happy 5th Anniversary, <span data-partner>my love</span>.</h3>
+        <p class="final-stat reveal">A LOT OF LIFE</p>
+        <p class="final-stat reveal">ONE VERY IMPORTANT PERSON</p>
+        <h2 id="finalHeadline" class="display reveal"></h2>
+        <h3 id="finalSubline" class="reveal"></h3>
         <p class="signature reveal">I love you. — <span data-self>Karthik</span></p>
         <button id="chapterSix" class="chapter-six reveal" type="button">Wait… one more thing 👀</button>
       </div>
@@ -185,8 +221,8 @@
       <button id="closeEpilogue" type="button" aria-label="Close final surprise">×</button>
       <div class="epilogue-inner">
         <span class="eyebrow">Our next chapter</span>
-        <div class="film-strip" id="filmStrip"></div>
-        <h2>See you in Chapter 6. ❤️</h2>
+        <div id="filmStrip" class="film-strip"></div>
+        <h2 id="epilogueText">See you in Chapter 6. ❤️</h2>
       </div>
     </section>
   </main>
@@ -195,7 +231,7 @@
     <button class="hidden-heart" type="button" aria-label="Hidden heart">♥</button>
   </template>
 
-  <script src="./content.js"></script>
+  <script src="./EDIT_HERE/content.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>
