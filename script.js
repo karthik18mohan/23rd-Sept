@@ -3,29 +3,49 @@
   const $ = (q, root = document) => root.querySelector(q);
   const $$ = (q, root = document) => [...root.querySelectorAll(q)];
 
+  const setText = (selector, value) => {
+    const el = $(selector);
+    if (el && value !== undefined && value !== null) el.textContent = value;
+  };
+
   const setNames = () => {
-    $$('[data-partner]').forEach(el => el.textContent = data.partnerName);
-    $$('[data-self]').forEach(el => el.textContent = data.selfName);
+    $$('[data-partner]').forEach(el => { el.textContent = data.partnerName; });
+    $$('[data-self]').forEach(el => { el.textContent = data.selfName; });
     document.title = `5 Years of ${data.selfName} + ${data.partnerName} ❤️`;
+    setText('#openingTiny', data.opening.tinyLine);
+    setText('#openingHello', data.opening.hello);
+    setText('#openingLine1', data.opening.line1);
+    setText('#openingLine2', data.opening.line2);
+    setText('#coverCaption', data.cover.caption);
+    setText('#coverTitle', data.cover.title);
+    setText('#coverAfter', data.cover.after);
+    setText('#audioLabel', data.audio.label);
+    setText('#finalHeadline', data.finale.headline);
+    setText('#finalSubline', data.finale.subline);
+    setText('#epilogueText', data.finale.ending);
   };
 
   const photoFallback = (el, src, label) => {
     if (!el) return;
+    if (!src) {
+      el.classList.add('photo-missing');
+      const span = $('span', el);
+      if (span) span.textContent = label || 'add photo';
+      return;
+    }
     const img = new Image();
     img.onload = () => {
       el.style.backgroundImage = `url("${src}")`;
+      el.classList.remove('photo-missing');
       const span = $('span', el);
       if (span) span.style.display = 'none';
     };
     img.onerror = () => {
+      el.classList.add('photo-missing');
       const span = $('span', el);
-      if (span && label) span.textContent = label;
+      if (span) span.textContent = label || src.split('/').pop();
     };
     img.src = src;
-  };
-
-  const hydratePhotos = () => {
-    Object.entries(data.photos).forEach(([key, src]) => photoFallback($(`[data-photo="${key}"]`), src, key));
   };
 
   const burstHearts = (root, count = 30) => {
@@ -49,10 +69,12 @@
     let start = 0;
     let frame = null;
     let completed = false;
+    let activePointerId = null;
     const duration = 1500;
 
     const reset = () => {
       cancelAnimationFrame(frame);
+      start = 0;
       btn.style.setProperty('--hold', '0%');
     };
 
@@ -63,7 +85,7 @@
       if (pct >= 100 && !completed) {
         completed = true;
         $('.hold-heart', btn).textContent = '♥';
-        burstHearts($('#burst'), 34);
+        burstHearts($('#burst'), 36);
         setTimeout(() => {
           intro.classList.add('opened');
           document.body.classList.remove('locked');
@@ -74,19 +96,13 @@
       frame = requestAnimationFrame(tick);
     };
 
-    let activePointerId = null;
-
     const down = e => {
       if (completed) return;
       e.preventDefault();
-
       if (e.pointerId !== undefined) {
         activePointerId = e.pointerId;
-        try {
-          btn.setPointerCapture(e.pointerId);
-        } catch {}
+        try { btn.setPointerCapture(e.pointerId); } catch {}
       }
-
       cancelAnimationFrame(frame);
       start = 0;
       frame = requestAnimationFrame(tick);
@@ -94,13 +110,9 @@
 
     const up = e => {
       if (e?.pointerId !== undefined && activePointerId !== null && e.pointerId !== activePointerId) return;
-
       if (e?.pointerId !== undefined) {
-        try {
-          if (btn.hasPointerCapture(e.pointerId)) btn.releasePointerCapture(e.pointerId);
-        } catch {}
+        try { if (btn.hasPointerCapture(e.pointerId)) btn.releasePointerCapture(e.pointerId); } catch {}
       }
-
       activePointerId = null;
       if (!completed) reset();
     };
@@ -108,11 +120,7 @@
     btn.addEventListener('pointerdown', down);
     btn.addEventListener('pointerup', up);
     btn.addEventListener('pointercancel', up);
-
-    ['contextmenu', 'dragstart', 'selectstart'].forEach(type => {
-      btn.addEventListener(type, e => e.preventDefault());
-    });
-
+    ['contextmenu', 'dragstart', 'selectstart'].forEach(type => btn.addEventListener(type, e => e.preventDefault()));
     btn.addEventListener('keydown', e => {
       if ((e.key === 'Enter' || e.key === ' ') && !completed) {
         e.preventDefault();
@@ -158,9 +166,9 @@
       const seconds = Math.floor(diff / 1000);
 
       const values = { years, months, days, hours, minutes, seconds };
-      Object.entries(values).forEach(([k, v]) => {
-        const el = $(`[data-unit="${k}"]`);
-        if (el) el.textContent = String(v).padStart(2, '0');
+      Object.entries(values).forEach(([key, value]) => {
+        const el = $(`[data-unit="${key}"]`);
+        if (el) el.textContent = String(value).padStart(2, '0');
       });
     };
 
@@ -168,99 +176,119 @@
     setInterval(update, 1000);
   };
 
-  const buildRewind = () => {
-    const years = [...data.storyYears.map(y => y.year.split(' ')[0]).reverse(), '2021'];
-    const root = $('#rewindYears');
-    root.innerHTML = years.map(y => `<span class="rewind-year">${y}</span>`).join('');
-    let played = false;
-    const io = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !played) {
-        played = true;
-        $$('.rewind-year', root).forEach((el, i) => setTimeout(() => el.classList.add('active'), i * 390));
-      }
-    }, { threshold: .5 });
-    io.observe(root);
-  };
-
-  const buildStory = () => {
-    const story = $('#story');
-    const heartTpl = $('#hiddenHeartTemplate');
-
-    data.storyYears.forEach((chapter, idx) => {
-      const sec = document.createElement('section');
-      sec.className = 'scene year-scene';
-      sec.id = `year-${idx + 1}`;
-      sec.innerHTML = `
-        <div class="section-wrap">
-          <div class="year-heading reveal">
-            <div class="year-number">${chapter.year}</div>
-            <div class="year-title">
-              <span class="eyebrow dark">${chapter.kicker}</span>
-              <h2>${chapter.title}</h2>
-              <p>${chapter.note}</p>
-            </div>
-          </div>
-          <div class="moments">
-            ${chapter.moments.map((m, i) => `
-              <article class="moment-card reveal" style="--tilt:${[-2.4, 1.6, -1.1][i % 3]}deg">
-                <div class="photo moment-photo" data-src="${m.photo}"><span>${chapter.year} · memory ${i + 1}</span></div>
-                <div class="moment-copy"><h3>${m.title}</h3><p>${m.text}</p></div>
-              </article>`).join('')}
-          </div>
-        </div>`;
-
-      const heart = heartTpl.content.firstElementChild.cloneNode(true);
-      heart.dataset.index = idx;
-      heart.style.top = `${18 + ((idx * 17) % 58)}%`;
-      heart.style[idx % 2 ? 'left' : 'right'] = `${5 + (idx * 4)}%`;
-      sec.appendChild(heart);
-      story.appendChild(sec);
+  const buildUsMontage = () => {
+    const root = $('#usMontage');
+    root.innerHTML = '';
+    data.thisIsUs.forEach((item, i) => {
+      const card = document.createElement('article');
+      card.className = `us-card reveal us-card-${(i % 3) + 1}`;
+      card.innerHTML = `
+        <div class="photo us-photo"><span>${String(i + 1).padStart(2, '0')} · add photo</span></div>
+        <div class="us-copy"><h3>${item.title}</h3><p>${item.text}</p></div>`;
+      root.appendChild(card);
+      photoFallback($('.us-photo', card), item.photo, `01-us-${String(i + 1).padStart(2, '0')}.jpg`);
     });
-
-    $$('[data-src]').forEach(el => photoFallback(el, el.dataset.src, $('span', el)?.textContent));
   };
 
-  const setupHiddenHearts = () => {
-    const found = new Set(JSON.parse(localStorage.getItem('anniv-hearts') || '[]'));
-    const score = $('#heartScore');
-    const message = $('#secretMessage');
-    const refresh = () => {
-      score.textContent = found.size;
-    };
+  const buildKnowGrid = () => {
+    const root = $('#knowGrid');
+    root.innerHTML = data.thingsIKnow.map((item, i) => `
+      <article class="know-card reveal" style="--delay:${i * 60}ms">
+        <span class="know-emoji">${item.emoji}</span>
+        <span class="know-label">${item.label}</span>
+        <strong>${item.value}</strong>
+      </article>`).join('');
+  };
 
-    $$('.hidden-heart').forEach(btn => {
-      const i = Number(btn.dataset.index);
-      if (found.has(i)) btn.classList.add('found');
-      btn.addEventListener('click', () => {
-        found.add(i);
-        btn.classList.add('found');
-        localStorage.setItem('anniv-hearts', JSON.stringify([...found]));
-        message.textContent = `♥ ${data.storyYears[i].secret}`;
-        refresh();
-        if (found.size === 5) {
-          setTimeout(() => {
-            message.textContent = 'You found all five. Of course you did. 🥹❤️';
-          }, 1800);
-        }
+  const buildJokes = () => {
+    const root = $('#jokeGrid');
+    root.innerHTML = '';
+    data.insideJokes.forEach((item, i) => {
+      const card = document.createElement('article');
+      card.className = 'joke-card reveal';
+      card.style.setProperty('--r', `${[-2.2, 1.6, -1.1, 2][i % 4]}deg`);
+      card.innerHTML = `
+        <div class="photo joke-photo"><span>inside joke ${i + 1}</span></div>
+        <div class="joke-copy"><span>PRIVATE EXHIBIT ${String(i + 1).padStart(2, '0')}</span><h3>${item.title}</h3><p>${item.text}</p></div>`;
+      root.appendChild(card);
+      photoFallback($('.joke-photo', card), item.photo, `02-joke-${String(i + 1).padStart(2, '0')}.jpg`);
+    });
+  };
+
+  const buildCameraRoll = () => {
+    const root = $('#cameraGroups');
+    root.innerHTML = '';
+    data.cameraRoll.forEach((group, groupIndex) => {
+      const section = document.createElement('div');
+      section.className = 'camera-group';
+      section.innerHTML = `
+        <div class="camera-heading reveal"><span>0${groupIndex + 1}</span><div><h3>${group.title}</h3><p>${group.caption}</p></div></div>
+        <div class="camera-row"></div>`;
+      root.appendChild(section);
+      const row = $('.camera-row', section);
+      group.photos.forEach((src, i) => {
+        const frame = document.createElement('div');
+        frame.className = 'photo camera-photo reveal';
+        frame.style.setProperty('--tilt', `${[-2.4, 1.7, -1.1, 2][i % 4]}deg`);
+        frame.innerHTML = `<span>${src.split('/').pop()}</span>`;
+        row.appendChild(frame);
+        photoFallback(frame, src, src.split('/').pop());
       });
     });
-    refresh();
   };
 
-  const setupCompare = () => {
-    const range = $('#compareRange');
-    const cover = $('#compareNew');
-    const divider = $('#compareDivider');
-    range.addEventListener('input', () => {
-      cover.style.width = `${range.value}%`;
-      divider.style.left = `${range.value}%`;
+  const buildMessages = () => {
+    const root = $('#messageStrip');
+    root.innerHTML = '';
+    data.messages.forEach((item, i) => {
+      const card = document.createElement('article');
+      card.className = 'message-card reveal';
+      card.style.setProperty('--r', `${[-3, 2, -1, 2.5][i % 4]}deg`);
+      card.innerHTML = `<div class="photo message-shot"><span>${item.image.split('/').pop()}</span></div><p>${item.caption}</p>`;
+      root.appendChild(card);
+      photoFallback($('.message-shot', card), item.image, item.image.split('/').pop());
     });
+  };
+
+  const buildChanged = () => {
+    $('#changedLines').innerHTML = data.whatChanged.map((line, i) => `
+      <p class="changed-line reveal ${i === data.whatChanged.length - 1 ? 'changed-final' : ''}">${line}</p>`).join('');
+  };
+
+  const buildQuiz = () => {
+    const root = $('#quizCard');
+    let index = 0;
+
+    const render = () => {
+      if (index >= data.quiz.length) {
+        root.innerHTML = `<div class="quiz-done"><span>RESULT</span><h3>Still us. Still ridiculous. Still my favourite. ❤️</h3><button type="button" id="quizAgain">play again</button></div>`;
+        $('#quizAgain').addEventListener('click', () => { index = 0; render(); });
+        return;
+      }
+      const q = data.quiz[index];
+      root.innerHTML = `
+        <div class="quiz-progress"><span style="width:${((index + 1) / data.quiz.length) * 100}%"></span></div>
+        <span class="quiz-count">${index + 1} / ${data.quiz.length}</span>
+        <h3>${q.question}</h3>
+        <div class="quiz-choices">
+          ${q.choices.map((choice, choiceIndex) => `<button type="button" data-choice="${choiceIndex}">${choice}</button>`).join('')}
+        </div>
+        <div class="quiz-answer" id="quizAnswer"></div>`;
+      $$('.quiz-choices button', root).forEach(btn => btn.addEventListener('click', () => {
+        $$('.quiz-choices button', root).forEach(b => { b.disabled = true; });
+        $('#quizAnswer').textContent = q.answer;
+        setTimeout(() => { index++; render(); }, 1500);
+      }));
+    };
+
+    render();
   };
 
   const setupAudio = () => {
     const audio = $('#ourAudio');
     const btn = $('#recordButton');
     const status = $('#audioStatus');
+    audio.src = data.audio.file;
 
     btn.addEventListener('click', async () => {
       if (!audio.paused) {
@@ -272,71 +300,99 @@
       try {
         await audio.play();
         btn.classList.add('playing');
-        status.textContent = 'playing our sound ♫';
+        status.textContent = 'playing ♫';
       } catch {
-        status.textContent = 'add assets/our-song.mp3 ♫';
+        status.textContent = 'add EDIT_HERE/music/our-song.mp3';
       }
     });
-
     audio.addEventListener('ended', () => {
       btn.classList.remove('playing');
       status.textContent = 'play again ♫';
     });
   };
 
-  const buildReasons = () => {
+  const buildTinyThings = () => {
     const root = $('#reasonGrid');
-    root.innerHTML = data.reasons.map((_, i) => `<button class="reason-heart" data-reason="${i}" aria-label="Reason ${i + 1}">♥</button>`).join('');
+    root.innerHTML = data.tinyThings.map((_, i) => `<button class="reason-heart" data-reason="${i}" aria-label="Tiny thing ${i + 1}">♥</button>`).join('');
     const modal = $('#reasonModal');
-
     $$('.reason-heart', root).forEach(btn => btn.addEventListener('click', () => {
       const i = Number(btn.dataset.reason);
-      $('#reasonNumber').textContent = `Reason ${String(i + 1).padStart(2, '0')} / 25`;
-      $('#reasonText').textContent = data.reasons[i];
+      $('#reasonNumber').textContent = `Tiny thing ${String(i + 1).padStart(2, '0')} / ${data.tinyThings.length}`;
+      $('#reasonText').textContent = data.tinyThings[i];
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
     }));
-
     const close = () => {
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden', 'true');
     };
-
     $('#reasonClose').addEventListener('click', close);
-    modal.addEventListener('click', e => {
-      if (e.target === modal) close();
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  };
+
+  const buildMuseum = () => {
+    const root = $('#museumGrid');
+    root.innerHTML = '';
+    data.museum.forEach((item, i) => {
+      const card = document.createElement('article');
+      card.className = 'museum-card reveal';
+      card.innerHTML = `
+        <div class="museum-number">EXHIBIT ${String(i + 1).padStart(2, '0')}</div>
+        <div class="photo museum-photo"><span>${item.image.split('/').pop()}</span></div>
+        <div class="museum-copy"><span class="museum-icon">${item.icon}</span><h3>${item.title}</h3><p>${item.text}</p></div>`;
+      root.appendChild(card);
+      photoFallback($('.museum-photo', card), item.image, item.image.split('/').pop());
     });
   };
 
-  const buildMosaic = () => {
-    const root = $('#mosaicGrid');
-    const images = [];
-    data.storyYears.forEach(y => y.moments.forEach(m => images.push(m.photo)));
-
-    for (let i = 0; i < 24; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'photo mosaic-cell';
-      cell.style.setProperty('--r', `${(i % 5 - 2) * 4}deg`);
-      cell.style.setProperty('--delay', `${(i % 8) * 65}ms`);
-      photoFallback(cell, images[i % images.length], '♥');
-      root.appendChild(cell);
-    }
+  const setupCompare = () => {
+    photoFallback($('#thenPhoto'), data.thenNow.then, '07-then.jpg');
+    photoFallback($('#nowPhoto'), data.thenNow.now, '07-now.jpg');
+    const range = $('#compareRange');
+    const cover = $('#compareNew');
+    const divider = $('#compareDivider');
+    const sync = () => {
+      cover.style.width = `${range.value}%`;
+      divider.style.left = `${range.value}%`;
+    };
+    range.addEventListener('input', sync);
+    sync();
   };
 
-  const buildLittleThings = () => {
-    $('#littleThingsGrid').innerHTML = data.littleThings.map((x, i) => `
-      <article class="thing-card reveal" style="--r:${[-1.4, 1.2, -.7, 1.1, -1.1, .7][i % 6]}deg">
-        <span>${x.icon}</span>
-        <strong>${x.label}</strong>
-        <p>${x.value}</p>
-      </article>`).join('');
+  const setupHiddenHearts = () => {
+    const targets = ['things-i-know', 'inside-jokes', 'camera-roll', 'messages', 'museum'];
+    const found = new Set(JSON.parse(localStorage.getItem('anniv-hearts-v2') || '[]'));
+    const template = $('#hiddenHeartTemplate');
+    const score = $('#heartScore');
+    const message = $('#secretMessage');
+
+    targets.forEach((id, i) => {
+      const section = document.getElementById(id);
+      if (!section) return;
+      const heart = template.content.firstElementChild.cloneNode(true);
+      heart.dataset.index = i;
+      heart.style.top = `${16 + ((i * 19) % 62)}%`;
+      heart.style[i % 2 ? 'left' : 'right'] = `${4 + i * 2}%`;
+      if (found.has(i)) heart.classList.add('found');
+      section.appendChild(heart);
+      heart.addEventListener('click', () => {
+        found.add(i);
+        heart.classList.add('found');
+        localStorage.setItem('anniv-hearts-v2', JSON.stringify([...found]));
+        score.textContent = found.size;
+        message.textContent = `♥ ${data.hiddenSecrets[i]}`;
+        if (found.size === targets.length) {
+          setTimeout(() => { message.textContent = 'You found all five. Of course you did. 🥹❤️'; }, 1600);
+        }
+      });
+    });
+    score.textContent = found.size;
   };
 
   const buildFuture = () => {
-    $('#futurePolaroids').innerHTML = [6, 7, 8, 9, 10].map((y, i) => `
-      <div class="future-card" style="--r:${[-7, 4, -2, 5, -4][i]}deg;--delay:${i * 120}ms">
-        <div>?</div>
-        <p>YEAR ${y}<br/>photo coming soon…</p>
+    $('#futurePolaroids').innerHTML = data.future.map((text, i) => `
+      <div class="future-card" style="--r:${[-7, 4, -2, 5, -4][i % 5]}deg;--delay:${i * 120}ms">
+        <div>?</div><p>${text}<br><small>photo coming soon…</small></p>
       </div>`).join('');
   };
 
@@ -350,20 +406,25 @@
   };
 
   const setupFinale = () => {
-    const epi = $('#epilogue');
-    const film = $('#filmStrip');
-    const imgs = data.storyYears.flatMap(y => y.moments.map(m => m.photo)).slice(0, 5);
-
-    imgs.forEach((src, i) => {
-      const p = document.createElement('div');
-      p.className = 'photo';
-      const s = document.createElement('span');
-      s.textContent = `memory ${i + 1}`;
-      p.appendChild(s);
-      photoFallback(p, src, s.textContent);
-      film.appendChild(p);
+    photoFallback($('#finaleBg'), data.finale.photo, '08-finale.jpg');
+    const strip = $('#filmStrip');
+    const sources = [
+      data.cover.photo,
+      data.thisIsUs[0]?.photo,
+      data.cameraRoll[0]?.photos?.[0],
+      data.cameraRoll[1]?.photos?.[0],
+      data.thenNow.now
+    ].filter(Boolean);
+    strip.innerHTML = '';
+    sources.forEach((src, i) => {
+      const el = document.createElement('div');
+      el.className = 'photo';
+      el.innerHTML = `<span>memory ${i + 1}</span>`;
+      strip.appendChild(el);
+      photoFallback(el, src, `memory ${i + 1}`);
     });
 
+    const epi = $('#epilogue');
     $('#chapterSix').addEventListener('click', () => {
       burstHearts($('#confetti'), 48);
       setTimeout(() => {
@@ -371,7 +432,6 @@
         epi.setAttribute('aria-hidden', 'false');
       }, 500);
     });
-
     $('#closeEpilogue').addEventListener('click', () => {
       epi.classList.remove('open');
       epi.setAttribute('aria-hidden', 'true');
@@ -379,11 +439,11 @@
   };
 
   const observers = () => {
-    const io = new IntersectionObserver(entries => entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    }), { threshold: .14, rootMargin: '0px 0px -8%' });
+    const io = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    }), { threshold: .12, rootMargin: '0px 0px -7%' });
 
-    $$('.reveal,.mosaic-grid,.future-card').forEach(el => io.observe(el));
+    $$('.reveal,.future-card').forEach(el => io.observe(el));
 
     window.addEventListener('scroll', () => {
       const max = document.documentElement.scrollHeight - innerHeight;
@@ -410,17 +470,21 @@
   };
 
   setNames();
-  hydratePhotos();
+  photoFallback($('#coverPhoto'), data.cover.photo, '00-cover.jpg');
   createIntro();
   buildCounter();
-  buildRewind();
-  buildStory();
-  setupHiddenHearts();
-  setupCompare();
+  buildUsMontage();
+  buildKnowGrid();
+  buildJokes();
+  buildCameraRoll();
+  buildMessages();
+  buildChanged();
+  buildQuiz();
   setupAudio();
-  buildReasons();
-  buildMosaic();
-  buildLittleThings();
+  buildTinyThings();
+  buildMuseum();
+  setupCompare();
+  setupHiddenHearts();
   buildFuture();
   buildLetter();
   setupFinale();
