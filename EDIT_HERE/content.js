@@ -7,12 +7,12 @@
 window.ANNIVERSARY = {
   // 00 — BASIC DETAILS
   selfName: "Karthik",
-  partnerName: "jaanu", // EDIT: her name / nickname
+  partnerName: "Jaanu", // EDIT: her name / nickname
   anniversaryDate: "2021-09-23T20:40:00+05:30", // EDIT if needed
 
   opening: {
-    tinyLine: "A tiny thing made only for you",
-    hello: "Hey",
+    tinyLine: "- For our 5th Anniversary -",
+    hello: "Hiiii",
     line1: "I made something for you.",
     line2: "Turn your sound on for the full experience 🎧"
   },
@@ -28,20 +28,20 @@ window.ANNIVERSARY = {
   // 02 — “THIS IS US” MONTAGE
   // Add/remove cards freely. Photo can be blank "" if you want text only.
   thisIsUs: [
-    { title: "Us when we actually take a decent photo.", text: "Rare. Valuable. Must be documented.", photo: "./EDIT_HERE/ics/11.jpeg" },
-    { title: "Us 97% of the time.", text: "Replace this with your worst/funniest selfie.", photo: "./EDIT_HERE/ics/20.jpeg" },
-    { title: "Us + food.", text: "Put the photo that instantly feels like the two of you.", photo: "./EDIT_HERE/ics/28.jpeg" },
-    { title: "Us going somewhere.", text: "A trip, drive, random outing — anything.", photo: "./EDIT_HERE/ics/27.jpeg" },
-    { title: "Us doing absolutely nothing.", text: "Because somehow those days matter too.", photo: "./EDIT_HERE/ics/16.jpeg" },
-    { title: "Just us.", text: "One photo you simply love.", photo: "./EDIT_HERE/ics/7.jpeg" }
+    { title: "Us when we actually take a decent photo.", text: "Almost all selfies 😁", photo: "./EDIT_HERE/ics/11.jpeg" },
+    { title: "Us 97% of the time.", text: "Disclaimer : This weirdness came from only one of us 🤭", photo: "./EDIT_HERE/ics/20.jpeg" },
+    { title: "Us + food.", text: "Never Ending story of Golgappas 😂", photo: "./EDIT_HERE/ics/28.jpeg" },
+    { title: "Us going somewhere.", text: "Dudi Dudi Dum Dum , Dudi Dudi Dum", photo: "./EDIT_HERE/ics/27.jpeg" },
+    { title: "Us doing absolutely nothing.", text: "Other then me taking selfies ", photo: "./EDIT_HERE/ics/16.jpeg" },
+    { title: "Just us.", text: "JUST USSSS!!!! ❤️❤️", photo: "./EDIT_HERE/ics/7.jpeg" }
   ],
 
   // 03 — THINGS I KNOW ABOUT YOU
   thingsIKnow: [
-    { emoji: "☕", label: "Your order", value: "without tomato" },
-    { emoji: "😤", label: "Your angry face means", value: "hmmmmmmm" },
-    { emoji: "🍟", label: "Your favourite thing to steal", value: "hoodie" },
-    { emoji: "💬", label: "A sentence you say constantly", value: "babba hogana" },
+    { emoji: "☕", label: "Your order is always", value: "tomato beda" },
+    { emoji: "😤", label: "Your angry message is", value: "hmmmmmmm" },
+    { emoji: "🧥", label: "Your favourite thing to steal", value: "hoodie" },
+    { emoji: "💬", label: "A phrase you say constantly", value: "babba hogana" },
     { emoji: "😂", label: "The thing that always makes you laugh", value: "paanch rupai wala kurkura" },
     { emoji: "⚠️", label: "Most dangerous message", value: "👍" }
   ],
@@ -88,9 +88,9 @@ window.ANNIVERSARY = {
 
   // 06 — WHATSAPP / CHAT SCREENSHOTS
   messages: [
-    { caption: "Romance.", image: "./EDIT_HERE/messages/01-funny-chat.jpg" },
-    { caption: "Also romance.", image: "./EDIT_HERE/messages/02-random-chat.jpg" },
-    { caption: "One I never want to lose.", image: "./EDIT_HERE/messages/03-sweet-chat.jpg" },
+    { caption: "Romance.", image: "./EDIT_HERE/ics/31.jpeg" },
+    { caption: "Also romance.", image: "./EDIT_HERE/ics/32.jpeg" },
+    { caption: "One I never want to lose.", image: "./EDIT_HERE/ics/33.jpeg" },
     { caption: "From an older version of us.", image: "./EDIT_HERE/messages/04-old-chat.jpg" }
   ],
 
@@ -107,37 +107,37 @@ window.ANNIVERSARY = {
   // 08 — COUPLE QUIZ
   // 'answer' is what the site reveals after she chooses.
   quiz: [
-    { question: "Who says sorry first?", choices: ["Me", "You"], answer: "EDIT: Put your verdict here 😂" },
-    { question: "Who takes longer to get ready?", choices: ["Me", "You"], answer: "EDIT: Put your verdict here" },
-    { question: "Who steals food?", choices: ["Me", "You"], answer: "EDIT: Put your verdict here" },
-    { question: "Who is more dramatic?", choices: ["Me", "You"], answer: "EDIT: Put your verdict here" },
-    { question: "Who loves the other more?", choices: ["Me", "You"], answer: "Wrong. It’s me. ❤️" }
+    { question: "Who says sorry first?", choices: ["Me", "You"], answer: "Obvisouly you ( even when not reqired😂 )" },
+    { question: "Who takes longer to get ready?", choices: ["Me", "You"], answer: "Again You 🤪" },
+    { question: "Who is confused looking at the menu?", choices: ["Me", "You"], answer: "Both 🫣" },
+    { question: "Who is more dramatic?", choices: ["Me", "You"], answer: "YOUUUUUUUUUUUU 🙃" },
+    { question: "Who loves the other more?", choices: ["Me", "You"], answer: "It’s me. ❤️" }
   ],
 
   // 09 — 25 TINY THINGS
   tinyThings: [
     "The way you smile when you’re actually excited.",
-    "EDIT: The weird way you say ______.",
+    "The way you sing ❤️",
     "Your inability to choose what to eat.",
-    "EDIT: One tiny habit you secretly love.",
+    "The way you give save bit of food to me",
     "How you can make an ordinary drive memorable.",
-    "EDIT: A specific look she gives you.",
+    "That look when I tease you",
     "The way we can talk nonsense for way too long.",
-    "EDIT: A tiny memory from a random day.",
+    "When you laughed at my singing 🤭",
     "How quickly you notice when something is off.",
-    "EDIT: Something she always remembers.",
+    "Always using my kerchief",
     "Our completely unnecessary debates.",
-    "EDIT: Her favourite snack / obsession.",
-    "How comfortable silence became.",
-    "EDIT: One thing she does when sleepy.",
-    "The laugh that means you’ve properly lost it.",
-    "EDIT: A phrase only she says.",
-    "How every trip has at least one disaster.",
-    "EDIT: Something she does for you quietly.",
-    "That smile. Still.",
-    "EDIT: A random thing that reminds you of her.",
+    "Obsession of Golgappas",
+    "How comfortable we became.",
+    "Our long bike rides",
+    "Watching old kannada favorite movies",
+    "DP : Dahi Puri",
+    "Travelling together",
+    "Discussion on our future",
+    "Morning Wake up Video Calls",
+    "Dudu Bubu Reels",
     "The version of me that exists around you.",
-    "EDIT: A tiny tradition you both have.",
+    "Attending functions as a Couple",
     "The fact that we still have new things to learn about each other.",
     "All the silly parts we somehow kept.",
     "That after everything, I still want the next chapter."
