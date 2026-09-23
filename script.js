@@ -74,24 +74,56 @@
       frame = requestAnimationFrame(tick);
     };
 
+    let activePointerId = null;
+
     const down = e => {
       if (completed) return;
       e.preventDefault();
+
+      if (e.pointerId !== undefined) {
+        activePointerId = e.pointerId;
+        try {
+          btn.setPointerCapture(e.pointerId);
+        } catch {}
+      }
+
+      cancelAnimationFrame(frame);
       start = 0;
       frame = requestAnimationFrame(tick);
     };
-    const up = () => {
+
+    const up = e => {
+      if (e?.pointerId !== undefined && activePointerId !== null && e.pointerId !== activePointerId) return;
+
+      if (e?.pointerId !== undefined) {
+        try {
+          if (btn.hasPointerCapture(e.pointerId)) btn.releasePointerCapture(e.pointerId);
+        } catch {}
+      }
+
+      activePointerId = null;
       if (!completed) reset();
     };
 
     btn.addEventListener('pointerdown', down);
     btn.addEventListener('pointerup', up);
-    btn.addEventListener('pointerleave', up);
     btn.addEventListener('pointercancel', up);
-    btn.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && !completed) down(e);
+
+    ['contextmenu', 'dragstart', 'selectstart'].forEach(type => {
+      btn.addEventListener(type, e => e.preventDefault());
     });
-    btn.addEventListener('keyup', up);
+
+    btn.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && !completed) {
+        e.preventDefault();
+        cancelAnimationFrame(frame);
+        start = 0;
+        frame = requestAnimationFrame(tick);
+      }
+    });
+    btn.addEventListener('keyup', e => {
+      if (e.key === 'Enter' || e.key === ' ') up(e);
+    });
   };
 
   const buildCounter = () => {
@@ -127,7 +159,7 @@
 
       const values = { years, months, days, hours, minutes, seconds };
       Object.entries(values).forEach(([k, v]) => {
-        const el = $("[data-unit="" + k + ""]");
+        const el = $(`[data-unit="${k}"]`);
         if (el) el.textContent = String(v).padStart(2, '0');
       });
     };
