@@ -42,7 +42,7 @@ window.ANNIVERSARY = {
     { emoji: "😤", label: "Your angry face means", value: "hmmmmmmm" },
     { emoji: "🍟", label: "Your favourite thing to steal", value: "hoodie" },
     { emoji: "💬", label: "A sentence you say constantly", value: "babba hogana" },
-    { emoji: "😂", label: "The thing that always makes you laugh", value: "dudu bubu reels" },
+    { emoji: "😂", label: "The thing that always makes you laugh", value: "paanch rupai wala kurkura" },
     { emoji: "⚠️", label: "Most dangerous message", value: "👍" }
   ],
 
