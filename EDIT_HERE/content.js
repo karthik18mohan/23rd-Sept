@@ -19,7 +19,7 @@ window.ANNIVERSARY = {
 
   // 01 — COVER
   cover: {
-    photo: "./EDIT_HERE/photos/00-cover.jpg",
+    photo: "./EDIT_HERE/ics/7.jpeg",
     caption: "You + Me",
     title: "Five years. And somehow, I still don’t know how to fit us into one page.",
     after: "So I tried anyway. ❤️"
@@ -28,12 +28,12 @@ window.ANNIVERSARY = {
   // 02 — “THIS IS US” MONTAGE
   // Add/remove cards freely. Photo can be blank "" if you want text only.
   thisIsUs: [
-    { title: "Us when we actually take a decent photo.", text: "Rare. Valuable. Must be documented.", photo: "./EDIT_HERE/photos/01-us-01.jpg" },
-    { title: "Us 97% of the time.", text: "Replace this with your worst/funniest selfie.", photo: "./EDIT_HERE/photos/01-us-02.jpg" },
-    { title: "Us + food.", text: "Put the photo that instantly feels like the two of you.", photo: "./EDIT_HERE/photos/01-us-03.jpg" },
-    { title: "Us going somewhere.", text: "A trip, drive, random outing — anything.", photo: "./EDIT_HERE/photos/01-us-04.jpg" },
-    { title: "Us doing absolutely nothing.", text: "Because somehow those days matter too.", photo: "./EDIT_HERE/photos/01-us-05.jpg" },
-    { title: "Just us.", text: "One photo you simply love.", photo: "./EDIT_HERE/photos/01-us-06.jpg" }
+    { title: "Us when we actually take a decent photo.", text: "Rare. Valuable. Must be documented.", photo: "./EDIT_HERE/ics/11.jpeg" },
+    { title: "Us 97% of the time.", text: "Replace this with your worst/funniest selfie.", photo: "./EDIT_HERE/ics/20.jpeg" },
+    { title: "Us + food.", text: "Put the photo that instantly feels like the two of you.", photo: "./EDIT_HERE/ics/28.jpeg" },
+    { title: "Us going somewhere.", text: "A trip, drive, random outing — anything.", photo: "./EDIT_HERE/ics/27.jpeg" },
+    { title: "Us doing absolutely nothing.", text: "Because somehow those days matter too.", photo: "./EDIT_HERE/ics/16.jpeg" },
+    { title: "Just us.", text: "One photo you simply love.", photo: "./EDIT_HERE/ics/7.jpeg" }
   ],
 
   // 03 — THINGS I KNOW ABOUT YOU
@@ -61,27 +61,27 @@ window.ANNIVERSARY = {
       title: "When you didn’t know I was taking a photo",
       caption: "The ones I usually like the most.",
       photos: [
-        "./EDIT_HERE/photos/03-candid-01.jpg",
-        "./EDIT_HERE/photos/03-candid-02.jpg",
-        "./EDIT_HERE/photos/03-candid-03.jpg"
+        "./EDIT_HERE/ics/12.jpeg",
+        "./EDIT_HERE/ics/18.jpeg",
+        "./EDIT_HERE/ics/13.jpeg"
       ]
     },
     {
       title: "When we had absolutely no idea what we were doing",
       caption: "Still made a memory out of it.",
       photos: [
-        "./EDIT_HERE/photos/04-chaos-01.jpg",
-        "./EDIT_HERE/photos/04-chaos-02.jpg",
-        "./EDIT_HERE/photos/04-chaos-03.jpg"
+        "./EDIT_HERE/ics/29.jpeg",
+        "./EDIT_HERE/ics/24.jpeg",
+        "./EDIT_HERE/ics/4.jpeg"
       ]
     },
     {
       title: "When you looked ridiculously pretty",
       caption: "Yes, I’m keeping these.",
       photos: [
-        "./EDIT_HERE/photos/05-favourite-01.jpg",
-        "./EDIT_HERE/photos/05-favourite-02.jpg",
-        "./EDIT_HERE/photos/05-favourite-03.jpg"
+        "./EDIT_HERE/ics/5.jpeg",
+        "./EDIT_HERE/ics/6.jpeg",
+        "./EDIT_HERE/ics/17.jpeg"
       ]
     }
   ],
@@ -155,8 +155,8 @@ window.ANNIVERSARY = {
 
   // 11 — THEN / NOW
   thenNow: {
-    then: "./EDIT_HERE/photos/07-then.jpg",
-    now: "./EDIT_HERE/photos/07-now.jpg"
+    then: "./EDIT_HERE/ics/2.jpeg",
+    now: "./EDIT_HERE/ics/26.jpeg"
   },
 
   // 12 — FUTURE
