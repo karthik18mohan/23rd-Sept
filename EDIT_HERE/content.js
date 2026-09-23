@@ -19,7 +19,7 @@ window.ANNIVERSARY = {
 
   // 01 — COVER
   cover: {
-    photo: "./EDIT_HERE/ics/7.jpeg",
+    photo: "./EDIT_HERE/ics/30.jpeg",
     caption: "You + Me",
     title: "Five years. And somehow, I still don’t know how to fit us into one page.",
     after: "So I tried anyway. ❤️"
