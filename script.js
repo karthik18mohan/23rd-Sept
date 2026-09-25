@@ -94,129 +94,148 @@
   };
 
 
-  let audioContext = null;
+  /* =========================================================
+     MEDIA-CHANNEL SOUND ENGINE
+     Uses real HTMLAudioElement playback instead of Web Audio for the
+     important effects. On iPhone this follows the media channel rather
+     than the Ring/Silent channel.
+     ========================================================= */
 
-  const getAudioContextSync = () => {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return null;
+  const MEDIA_SAMPLE_RATE = 24000;
+
+  const encodeWavUrl = samples => {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+    const writeText = (offset, text) => {
+      for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i));
+    };
+
+    writeText(0, 'RIFF');
+    view.setUint32(4, 36 + samples.length * 2, true);
+    writeText(8, 'WAVE');
+    writeText(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, MEDIA_SAMPLE_RATE, true);
+    view.setUint32(28, MEDIA_SAMPLE_RATE * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeText(36, 'data');
+    view.setUint32(40, samples.length * 2, true);
+
+    for (let i = 0; i < samples.length; i++) {
+      const value = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(44 + i * 2, value < 0 ? value * 0x8000 : value * 0x7fff, true);
+    }
+
+    return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+  };
+
+  const makeSweepUrl = (fromHz, toHz, duration, startAmp, endAmp) => {
+    const count = Math.floor(duration * MEDIA_SAMPLE_RATE);
+    const samples = new Float32Array(count);
+    let phase = 0;
+
+    for (let i = 0; i < count; i++) {
+      const p = i / Math.max(1, count - 1);
+      const freq = fromHz * Math.pow(toHz / fromHz, p);
+      phase += (Math.PI * 2 * freq) / MEDIA_SAMPLE_RATE;
+
+      const attack = Math.min(1, p / 0.025);
+      const release = Math.min(1, (1 - p) / 0.035);
+      const amp = (startAmp + (endAmp - startAmp) * p) * attack * release;
+      samples[i] = Math.sin(phase) * amp;
+    }
+
+    return encodeWavUrl(samples);
+  };
+
+  const makeChimeUrl = (tones, duration = 0.72) => {
+    const count = Math.floor(duration * MEDIA_SAMPLE_RATE);
+    const samples = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      const t = i / MEDIA_SAMPLE_RATE;
+      let value = 0;
+
+      tones.forEach(({ at, hz, amp = 0.55, decay = 6.5 }) => {
+        if (t < at) return;
+        const local = t - at;
+        const attack = Math.min(1, local / 0.012);
+        const envelope = attack * Math.exp(-decay * local);
+        value += Math.sin(Math.PI * 2 * hz * local) * amp * envelope;
+        value += Math.sin(Math.PI * 4 * hz * local) * amp * 0.16 * envelope;
+      });
+
+      samples[i] = Math.max(-0.95, Math.min(0.95, value));
+    }
+
+    return encodeWavUrl(samples);
+  };
+
+  const mediaUrls = {
+    hold: makeSweepUrl(115, 900, 1.55, 0.14, 0.72),
+    open: makeChimeUrl([
+      { at: 0.00, hz: 440, amp: 0.50 },
+      { at: 0.13, hz: 660, amp: 0.54 },
+      { at: 0.29, hz: 990, amp: 0.58 }
+    ], 0.82),
+    sparkle: makeChimeUrl([
+      { at: 0.00, hz: 820, amp: 0.42, decay: 11 },
+      { at: 0.055, hz: 1260, amp: 0.40, decay: 12 }
+    ], 0.34),
+    heart: makeChimeUrl([
+      { at: 0.00, hz: 520, amp: 0.46, decay: 12 },
+      { at: 0.07, hz: 760, amp: 0.42, decay: 13 }
+    ], 0.30),
+    paper: makeChimeUrl([
+      { at: 0.00, hz: 260, amp: 0.28, decay: 14 },
+      { at: 0.07, hz: 390, amp: 0.24, decay: 15 }
+    ], 0.30),
+    tap: makeChimeUrl([
+      { at: 0.00, hz: 420, amp: 0.30, decay: 18 }
+    ], 0.18)
+  };
+
+  const mediaSounds = Object.fromEntries(
+    Object.entries(mediaUrls).map(([kind, src]) => {
+      const audio = document.createElement('audio');
+      audio.src = src;
+      audio.preload = 'auto';
+      audio.volume = 1;
+      audio.muted = false;
+      audio.setAttribute('playsinline', '');
+      audio.setAttribute('webkit-playsinline', '');
+      audio.setAttribute('aria-hidden', 'true');
+      audio.tabIndex = -1;
+      audio.style.display = 'none';
+      document.body.appendChild(audio);
+      try { audio.load(); } catch {}
+      return [kind, audio];
+    })
+  );
+
+  const playMediaSound = kind => {
+    const audio = mediaSounds[kind];
+    if (!audio) return false;
 
     try {
-      if (navigator.audioSession && 'type' in navigator.audioSession) {
-        navigator.audioSession.type = 'playback';
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1;
+      audio.muted = false;
+      const result = audio.play();
+      if (result && typeof result.catch === 'function') {
+        result.catch(() => {});
       }
-    } catch {}
-
-    if (!audioContext) audioContext = new AudioCtx();
-
-    if (audioContext.state === 'suspended') {
-      try {
-        const resumePromise = audioContext.resume();
-        if (resumePromise && typeof resumePromise.catch === 'function') {
-          resumePromise.catch(() => {});
-        }
-      } catch {}
-    }
-
-    return audioContext;
-  };
-
-  const ensureAudioContext = async () => {
-    const ctx = getAudioContextSync();
-    if (!ctx) return null;
-    if (ctx.state === 'suspended') {
-      try { await ctx.resume(); } catch {}
-    }
-    return ctx;
-  };
-
-  const toneOnContext = (ctx, frequency, endFrequency, duration = 0.12, gainValue = 0.065, delay = 0, type = 'sine') => {
-    const startAt = ctx.currentTime + delay;
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-    oscillator.type = type;
-    oscillator.frequency.setValueAtTime(frequency, startAt);
-    oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency || frequency), startAt + duration);
-    gain.gain.setValueAtTime(0.0001, startAt);
-    gain.gain.exponentialRampToValueAtTime(gainValue, startAt + 0.012);
-    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
-    oscillator.start(startAt);
-    oscillator.stop(startAt + duration + 0.04);
-  };
-
-  const playSound = kind => {
-    const ctx = getAudioContextSync();
-    if (!ctx) return;
-
-    const run = () => {
-      if (ctx.state !== 'running') return;
-      try {
-        if (kind === 'open') {
-          toneOnContext(ctx, 360, 620, 0.18, 0.085);
-          toneOnContext(ctx, 620, 900, 0.20, 0.075, 0.09);
-          toneOnContext(ctx, 900, 1320, 0.24, 0.065, 0.19);
-        } else if (kind === 'sparkle') {
-          toneOnContext(ctx, 700, 1300, 0.13, 0.065);
-          toneOnContext(ctx, 1050, 1700, 0.12, 0.05, 0.065);
-        } else if (kind === 'heart') {
-          toneOnContext(ctx, 500, 760, 0.11, 0.06);
-          toneOnContext(ctx, 720, 1040, 0.13, 0.05, 0.055);
-        } else if (kind === 'paper') {
-          toneOnContext(ctx, 240, 360, 0.10, 0.04, 0, 'triangle');
-          toneOnContext(ctx, 360, 520, 0.13, 0.035, 0.07, 'triangle');
-        } else {
-          toneOnContext(ctx, 380, 540, 0.09, 0.045);
-        }
-      } catch {}
-    };
-
-    if (ctx.state === 'running') {
-      run();
-    } else {
-      try {
-        const p = ctx.resume();
-        if (p && typeof p.then === 'function') p.then(run).catch(() => {});
-      } catch {}
-    }
-  };
-
-
-  const playTapticFallback = kind => {
-    const ctx = getAudioContextSync();
-    if (!ctx || ctx.state !== 'running') return false;
-
-    const shapes = {
-      tick: { frequency: 95, duration: 0.035, gain: 0.032 },
-      light: { frequency: 82, duration: 0.045, gain: 0.040 },
-      medium: { frequency: 72, duration: 0.060, gain: 0.050 },
-      success: { frequency: 88, duration: 0.055, gain: 0.048 },
-      complete: { frequency: 64, duration: 0.085, gain: 0.060 }
-    };
-    const shape = shapes[kind] || shapes.light;
-
-    try {
-      const oscillator = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const now = ctx.currentTime;
-
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(shape.frequency, now);
-      oscillator.frequency.exponentialRampToValueAtTime(Math.max(45, shape.frequency * 0.68), now + shape.duration);
-
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(shape.gain, now + 0.006);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + shape.duration);
-
-      oscillator.connect(gain);
-      gain.connect(ctx.destination);
-      oscillator.start(now);
-      oscillator.stop(now + shape.duration + 0.012);
       return true;
     } catch {
       return false;
     }
   };
+
+  const playSound = kind => playMediaSound(kind === 'hold' ? 'tap' : kind);
 
   const haptic = kind => {
     const patterns = {
@@ -229,80 +248,50 @@
 
     try {
       if (typeof navigator.vibrate === 'function') {
-        const didVibrate = navigator.vibrate(patterns[kind] || patterns.light);
-        if (didVibrate) return true;
+        return navigator.vibrate(patterns[kind] || patterns.light);
       }
     } catch {}
-
-    // iOS Chrome/Safari do not expose general-purpose vibration to webpages.
-    // Use a tiny low-frequency pulse so the action still feels tactile.
-    return playTapticFallback(kind);
+    return false;
   };
 
-  let activeHoldSound = null;
-  let holdSoundToken = 0;
+  let activeHoldMedia = null;
 
   const stopHoldRampSound = () => {
-    holdSoundToken += 1;
-    const current = activeHoldSound;
-    activeHoldSound = null;
-
-    if (current) {
-      try {
-        const now = current.ctx.currentTime;
-        current.gain.gain.cancelScheduledValues(now);
-        current.gain.gain.setValueAtTime(Math.max(0.0001, current.gain.gain.value), now);
-        current.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
-        current.oscillator.stop(now + 0.055);
-      } catch {}
-    }
-
+    if (!activeHoldMedia) return;
+    try {
+      activeHoldMedia.pause();
+      activeHoldMedia.currentTime = 0;
+    } catch {}
+    activeHoldMedia = null;
   };
 
-  const startHoldRampSound = durationMs => {
+  const startHoldRampSound = () => {
     stopHoldRampSound();
-    const token = ++holdSoundToken;
-    const ctx = getAudioContextSync();
-    if (!ctx) return;
+    const audio = mediaSounds.hold;
+    if (!audio) return;
 
-    const startRamp = () => {
-      if (token !== holdSoundToken || ctx.state !== 'running') return;
-
-      try {
-        const oscillator = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const now = ctx.currentTime;
-        const duration = Math.max(0.25, durationMs / 1000);
-
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(120, now);
-        oscillator.frequency.exponentialRampToValueAtTime(880, now + duration);
-
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.025, now + 0.045);
-        gain.gain.exponentialRampToValueAtTime(0.11, now + duration);
-
-        oscillator.connect(gain);
-        gain.connect(ctx.destination);
-        oscillator.start(now);
-
-        activeHoldSound = { ctx, oscillator, gain, token };
-      } catch {}
-    };
-
-    if (ctx.state === 'running') {
-      startRamp();
-    } else {
-      try {
-        const p = ctx.resume();
-        if (p && typeof p.then === 'function') p.then(startRamp).catch(() => {});
-      } catch {}
+    try {
+      audio.currentTime = 0;
+      audio.volume = 1;
+      audio.muted = false;
+      activeHoldMedia = audio;
+      const result = audio.play();
+      if (result && typeof result.catch === 'function') {
+        result.catch(() => {
+          if (activeHoldMedia === audio) activeHoldMedia = null;
+        });
+      }
+    } catch {
+      activeHoldMedia = null;
     }
   };
 
-  // Prime Web Audio on the first real user gesture. This is especially
-  // important on iPhone/Safari, which keeps AudioContext suspended otherwise.
-  const unlockAudio = () => { getAudioContextSync(); };
+  const unlockAudio = () => {
+    Object.values(mediaSounds).forEach(audio => {
+      try { audio.load(); } catch {}
+    });
+  };
+
   document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
   document.addEventListener('touchstart', unlockAudio, { once: true, capture: true, passive: true });
 
@@ -360,7 +349,7 @@
       e.preventDefault();
       hapticStep = 0;
       haptic('light');
-      startHoldRampSound(duration);
+      startHoldRampSound();
       if (e.pointerId !== undefined) {
         activePointerId = e.pointerId;
         try { btn.setPointerCapture(e.pointerId); } catch {}
