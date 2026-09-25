@@ -46,15 +46,7 @@ window.ANNIVERSARY = {
     { emoji: "⚠️", label: "Most dangerous message", value: "👍" }
   ],
 
-  // 04 — THINGS ONLY WE UNDERSTAND
-  insideJokes: [
-    { title: "EDIT: The _____ incident", text: "One-line explanation or just leave it mysterious.", photo: "./EDIT_HERE/photos/02-joke-01.jpg" },
-    { title: "EDIT: That one place", text: "The restaurant / trip / road / room with a story.", photo: "./EDIT_HERE/photos/02-joke-02.jpg" },
-    { title: "EDIT: Don’t say _____", text: "A word or phrase that instantly makes both of you laugh.", photo: "./EDIT_HERE/photos/02-joke-03.jpg" },
-    { title: "EDIT: The argument we somehow keep having", text: "Keep this funny, not serious 😌", photo: "./EDIT_HERE/photos/02-joke-04.jpg" }
-  ],
-
-  // 05 — CAMERA ROLL
+  // 04 — CAMERA ROLL
   // Each group can have 1–4 photos.
   cameraRoll: [
     {
@@ -150,31 +142,25 @@ window.ANNIVERSARY = {
     { icon: "📍", title: "A place", text: "EDIT: one location that means something", image: "./EDIT_HERE/photos/06-museum-place.jpg" },
     { icon: "🎁", title: "A thing", text: "EDIT: gift / object / random keepsake", image: "./EDIT_HERE/photos/06-museum-gift.jpg" },
     { icon: "📷", title: "A photo", text: "EDIT: why this specific image matters", image: "./EDIT_HERE/photos/06-museum-photo.jpg" },
-    { icon: "🎵", title: "A song", text: "EDIT: your song and what it reminds you of", image: "./EDIT_HERE/photos/06-museum-song.jpg" }
+    { icon: "🚗", title: "A drive", text: "EDIT: one drive or road that became part of your story", image: "./EDIT_HERE/photos/06-museum-drive.jpg" }
   ],
 
   // 11 — THEN / NOW
   thenNow: {
-    then: "./EDIT_HERE/ics/26.jpeg",
-    now: "./EDIT_HERE/ics/2.jpeg"
+    then: "./EDIT_HERE/ics/2.jpeg",
+    now: "./EDIT_HERE/ics/26.jpeg"
   },
 
   // 12 — FUTURE
   future: [
-    "Our next trip",
-    "Our next stupid argument",
-    "Our next birthday",
-    "Our next photo we hate now and love later",
+    "Our engagement",
+    "Our trip",
+    "Our late night drives",
+    "Our beach sunset view",
     "The next version of us"
   ],
 
-  // 13 — AUDIO
-  audio: {
-    file: "./EDIT_HERE/music/our-song.mp3",
-    label: "our song / your voice note"
-  },
-
-  // 14 — FINAL LETTER
+  // 13 — FINAL LETTER
   letter: [
     "EDIT: Start with what these five years genuinely mean to you.",
     "EDIT: Write what you love about who she is — not just what she does for you.",
