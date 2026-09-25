@@ -1,11 +1,11 @@
 (() => {
   const data = window.ANNIVERSARY;
   const $ = (q, root = document) => root.querySelector(q);
-  const $ = (q, root = document) => [...root.querySelectorAll(q)];
+  const $$ = (q, root = document) => [...root.querySelectorAll(q)];
 
   const revealAll = () => {
     try {
-      $('.reveal,.future-card').forEach(el => el.classList.add('visible'));
+      $$('.reveal,.future-card').forEach(el => el.classList.add('visible'));
       document.documentElement.classList.add('js-fallback');
     } catch {}
   };
@@ -346,9 +346,9 @@
           ${q.choices.map((choice, choiceIndex) => `<button type="button" data-choice="${choiceIndex}">${choice}</button>`).join('')}
         </div>
         <div class="quiz-answer" id="quizAnswer"></div>`;
-      $('.quiz-choices button', root).forEach(btn => btn.addEventListener('click', () => {
+      $$('.quiz-choices button', root).forEach(btn => btn.addEventListener('click', () => {
         playSound('tap');
-        $('.quiz-choices button', root).forEach(b => { b.disabled = true; });
+        $$('.quiz-choices button', root).forEach(b => { b.disabled = true; });
         $('#quizAnswer').textContent = q.answer;
         setTimeout(() => { index++; render(); }, 1500);
       }));
@@ -361,7 +361,7 @@
     const root = $('#reasonGrid');
     root.innerHTML = data.tinyThings.map((_, i) => `<button class="reason-heart" data-reason="${i}" aria-label="Tiny thing ${i + 1}">♥</button>`).join('');
     const modal = $('#reasonModal');
-    $('.reason-heart', root).forEach(btn => btn.addEventListener('click', () => {
+    $$('.reason-heart', root).forEach(btn => btn.addEventListener('click', () => {
       playSound('heart');
       btn.classList.remove('heart-tapped');
       void btn.offsetWidth;
