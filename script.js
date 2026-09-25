@@ -409,6 +409,23 @@
     sync();
   };
 
+
+  const createHeartSparkBurst = heart => {
+    const symbols = ['✦', '✧', '⋆', '♡'];
+    for (let i = 0; i < 14; i++) {
+      const spark = document.createElement('span');
+      spark.className = 'collect-spark';
+      spark.textContent = symbols[i % symbols.length];
+      const angle = (Math.PI * 2 * i) / 14 + (Math.random() * 0.22 - 0.11);
+      const distance = 48 + Math.random() * 62;
+      spark.style.setProperty('--sx', `${Math.cos(angle) * distance}px`);
+      spark.style.setProperty('--sy', `${Math.sin(angle) * distance}px`);
+      spark.style.setProperty('--sr', `${Math.random() * 220 - 110}deg`);
+      spark.style.setProperty('--sd', `${Math.random() * 90}ms`);
+      heart.appendChild(spark);
+    }
+  };
+
   const setupHiddenHearts = () => {
     const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'museum'];
     let savedHearts = [];
@@ -436,8 +453,9 @@
         safeStorageSet('anniv-hearts-v3', JSON.stringify([...found]));
         score.textContent = found.size;
         message.textContent = `♥ ${data.hiddenSecrets[i]}`;
+        createHeartSparkBurst(heart);
         heart.classList.add('collecting');
-        setTimeout(() => heart.remove(), 720);
+        setTimeout(() => heart.remove(), 920);
 
         if (found.size === targets.length) {
           setTimeout(() => {
