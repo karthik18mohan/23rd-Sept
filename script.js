@@ -182,6 +182,42 @@
   };
 
 
+  const playTapticFallback = kind => {
+    const ctx = getAudioContextSync();
+    if (!ctx || ctx.state !== 'running') return false;
+
+    const shapes = {
+      tick: { frequency: 95, duration: 0.035, gain: 0.032 },
+      light: { frequency: 82, duration: 0.045, gain: 0.040 },
+      medium: { frequency: 72, duration: 0.060, gain: 0.050 },
+      success: { frequency: 88, duration: 0.055, gain: 0.048 },
+      complete: { frequency: 64, duration: 0.085, gain: 0.060 }
+    };
+    const shape = shapes[kind] || shapes.light;
+
+    try {
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const now = ctx.currentTime;
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(shape.frequency, now);
+      oscillator.frequency.exponentialRampToValueAtTime(Math.max(45, shape.frequency * 0.68), now + shape.duration);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(shape.gain, now + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + shape.duration);
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start(now);
+      oscillator.stop(now + shape.duration + 0.012);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const haptic = kind => {
     const patterns = {
       tick: 10,
@@ -193,10 +229,14 @@
 
     try {
       if (typeof navigator.vibrate === 'function') {
-        return navigator.vibrate(patterns[kind] || patterns.light);
+        const didVibrate = navigator.vibrate(patterns[kind] || patterns.light);
+        if (didVibrate) return true;
       }
     } catch {}
-    return false;
+
+    // iOS Chrome/Safari do not expose general-purpose vibration to webpages.
+    // Use a tiny low-frequency pulse so the action still feels tactile.
+    return playTapticFallback(kind);
   };
 
   let activeHoldSound = null;
@@ -288,6 +328,8 @@
       if (!start) start = t;
       const pct = Math.min(100, ((t - start) / duration) * 100);
       btn.style.setProperty('--hold', `${pct}%`);
+      btn.style.setProperty('--hold-scale', String(1 + (pct / 100) * 0.18));
+      btn.style.setProperty('--hold-glow', `${0.25 + (pct / 100) * 0.75}`);
 
       const nextStep = pct >= 75 ? 3 : pct >= 50 ? 2 : pct >= 25 ? 1 : 0;
       if (nextStep > hapticStep) {
