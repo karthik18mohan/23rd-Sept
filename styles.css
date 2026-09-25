@@ -1648,5 +1648,5 @@ input[type="range"] {
 .hold-heart {
   transform: scale(var(--hold-scale,1));
   filter:
-    drop-shadow(0 0 calc(10px + 18px * var(--hold-glow,.25)) rgba(245,168,186,var(--hold-glow,.35)));
+    drop-shadow(0 0 var(--hold-glow-px,10px) rgba(245,168,186,var(--hold-glow,.35)));
 }
