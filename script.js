@@ -436,6 +436,18 @@
     }
   };
 
+  const loveMessageForCount = count => {
+    const messages = [
+      'Find the first glowing heart ♥',
+      'I love you ❤️',
+      'I love youuu ❤️',
+      'I love youuuu ❤️',
+      'I love youuuuu ❤️',
+      'I love youuuuuu ∞ ❤️'
+    ];
+    return messages[Math.max(0, Math.min(5, count))];
+  };
+
   const setupHiddenHearts = () => {
     const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'museum'];
     let savedHearts = [];
@@ -462,14 +474,14 @@
         found.add(i);
         safeStorageSet('anniv-hearts-v3', JSON.stringify([...found]));
         score.textContent = found.size;
-        message.textContent = `♥ ${data.hiddenSecrets[i]}`;
+        message.textContent = loveMessageForCount(found.size);
         createHeartSparkBurst(heart);
         heart.classList.add('collecting');
         setTimeout(() => heart.remove(), 920);
 
         if (found.size === targets.length) {
           setTimeout(() => {
-            message.textContent = 'You found all five. Of course you did. 🥹❤️';
+            message.textContent = loveMessageForCount(5);
             playSound('open');
           }, 1200);
         }
@@ -477,7 +489,7 @@
     });
 
     score.textContent = found.size;
-    if (found.size === targets.length) message.textContent = 'You found all five. Of course you did. 🥹❤️';
+    message.textContent = loveMessageForCount(found.size);
   };
 
   const buildFuture = () => {
@@ -491,11 +503,32 @@
   const buildLetter = () => {
     $('#letterBody').innerHTML = data.letter.map(p => `<p>${p}</p>`).join('');
     const env = $('#envelope');
+    const letterSection = $('#letter');
+
+    const closeLetter = () => {
+      if (!env.classList.contains('open')) return;
+      env.classList.remove('open');
+      env.setAttribute('aria-expanded', 'false');
+    };
+
     env.addEventListener('click', () => {
       playSound('paper');
       const open = env.classList.toggle('open');
       env.setAttribute('aria-expanded', String(open));
     });
+
+    if ('IntersectionObserver' in window && letterSection) {
+      const letterObserver = new IntersectionObserver(entries => {
+        const entry = entries[0];
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.35) closeLetter();
+      }, { threshold: [0, 0.35, 0.7] });
+      letterObserver.observe(letterSection);
+    } else {
+      addEventListener('scroll', () => {
+        const rect = letterSection?.getBoundingClientRect();
+        if (!rect || rect.bottom < innerHeight * .25 || rect.top > innerHeight * .75) closeLetter();
+      }, { passive: true });
+    }
   };
 
   const setupFinale = () => {
