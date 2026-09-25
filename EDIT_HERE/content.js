@@ -161,10 +161,9 @@ window.ANNIVERSARY = {
   ],
 
   // 13 — FINAL LETTER
+  letterGreeting: "Hiii kanda,",
   letter: [
-    "EDIT: Start with what these five years genuinely mean to you.",
-    "EDIT: Write what you love about who she is — not just what she does for you.",
-    "EDIT: End with what you hope the next chapter feels like."
+    "From the time I talked to you and the day I met you, my life has changed completely. I can’t believe it’s 5 years already. We have come so much far from where we started, but I still remember the starting days where we felt so comfortable with each other instantly. Even before we knew that we shared a special bond, we were already so close to each other. We didn’t have try or force or pretend anything; it just happened, and that’s what I love about us. It was never our choice; it was always meant to be, and I can’t wait to spend our life together."
   ],
 
   // 15 — FINALE
