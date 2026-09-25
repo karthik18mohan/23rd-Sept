@@ -629,3 +629,11 @@ button { -webkit-tap-highlight-color: transparent; }
     100% { transform: translateY(-8%) scale(.98); }
   }
 }
+
+
+/* Fail-safe: content must never stay invisible if a browser blocks an optional API. */
+.js-fallback .reveal,
+.js-fallback .future-card {
+  opacity: 1 !important;
+  transform: none !important;
+}
