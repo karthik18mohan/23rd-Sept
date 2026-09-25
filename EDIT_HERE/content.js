@@ -14,7 +14,6 @@ window.ANNIVERSARY = {
     tinyLine: "- For our 5th Anniversary -",
     hello: "Hiiii",
     line1: "I made something for you.",
-    line2: "Turn up your media volume for the full experience 🔊"
   },
 
   // 01 — COVER
