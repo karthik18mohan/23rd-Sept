@@ -475,3 +475,157 @@ button { -webkit-tap-highlight-color: transparent; }
   .message-strip { grid-template-columns: 1fr; }
   .message-card:nth-child(even) { margin-top: 0; }
 }
+
+/* USER-REQUESTED INTERACTION REFINEMENTS */
+
+/* Collectible hearts: intentionally obvious, glowing and magical. */
+.hidden-heart {
+  background: radial-gradient(circle at 35% 30%, #fff 0 8%, #ffb8ca 18%, #d94f76 55%, #941c43 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.75);
+  box-shadow:
+    0 0 0 5px rgba(255,126,158,.10),
+    0 0 18px rgba(255,113,151,.95),
+    0 0 42px rgba(255,80,130,.68),
+    0 10px 30px rgba(83,39,51,.22);
+  text-shadow: 0 0 8px #fff;
+  animation: hiddenHeartGlow 1.35s ease-in-out infinite;
+  transform-origin: center;
+}
+.hidden-heart::before,
+.hidden-heart::after {
+  content: "✦";
+  position: absolute;
+  color: #ffdce5;
+  font-size: .72rem;
+  pointer-events: none;
+  animation: heartSparkle 1.5s ease-in-out infinite;
+}
+.hidden-heart::before { top: -10px; right: -7px; }
+.hidden-heart::after { bottom: -9px; left: -8px; animation-delay: .55s; }
+.hidden-heart.collecting {
+  pointer-events: none;
+  animation: collectHeart .72s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes hiddenHeartGlow {
+  0%,100% { transform: translateY(0) scale(1); filter: brightness(1); }
+  50% { transform: translateY(-7px) scale(1.14); filter: brightness(1.25); }
+}
+@keyframes heartSparkle {
+  0%,100% { opacity:.2; transform: scale(.5) rotate(0deg); }
+  50% { opacity:1; transform: scale(1.25) rotate(35deg); }
+}
+@keyframes collectHeart {
+  0% {
+    opacity:1;
+    transform: scale(1);
+    box-shadow: 0 0 20px #ff91ad, 0 0 48px rgba(255,76,125,.8);
+  }
+  35% {
+    opacity:1;
+    transform: scale(1.55) rotate(-10deg);
+    box-shadow: 0 0 35px #fff, 0 0 80px #ff5f8e;
+  }
+  100% {
+    opacity:0;
+    transform: scale(.05) rotate(30deg) translateY(-28px);
+    filter: blur(5px);
+  }
+}
+
+/* Tappable 25-heart grid feedback. */
+.reason-heart.heart-tapped {
+  animation: reasonHeartPop .35s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes reasonHeartPop {
+  50% { transform: scale(1.22) rotate(7deg); background: rgba(255,255,255,.2); }
+}
+
+/* Future: intentionally text-only — these moments do not have photos yet. */
+.future-polaroids {
+  align-items: stretch;
+}
+.future-card.future-text-card {
+  width: min(205px, 18vw);
+  min-height: 230px;
+  padding: 22px 18px;
+  border-radius: 22px;
+  color: #fff5f8;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(236,136,164,.18), transparent 55%),
+    rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 20px 55px rgba(0,0,0,.23);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+}
+.future-card.future-text-card::before {
+  content: "♡";
+  font-size: 2rem;
+  color: #f5b6c7;
+  text-shadow: 0 0 18px rgba(245,182,199,.5);
+}
+.future-card.future-text-card .future-number {
+  display: block;
+  color: #c99ba8;
+  font-size: .66rem;
+  letter-spacing: .17em;
+  margin-top: auto;
+}
+.future-card.future-text-card p {
+  margin: 12px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem,2vw,1.75rem);
+  line-height: 1.05;
+}
+
+/* Letter rises for the reveal, then settles back onto the envelope. */
+.envelope.open .letter-paper {
+  height: 370px;
+  z-index: 7;
+  animation: letterLiftAndSettle .95s cubic-bezier(.2,.78,.2,1) forwards;
+}
+@keyframes letterLiftAndSettle {
+  0% { transform: translateY(0) scale(.96); }
+  52% { transform: translateY(-46%) scale(1); }
+  100% { transform: translateY(-10%) scale(.98); }
+}
+.envelope:not(.open) .letter-paper {
+  animation: none;
+  transform: translateY(0);
+}
+
+/* Signature requested on two lines. */
+.signature-name {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+/* Chapter 6 is deliberately text-only. */
+.epilogue-inner {
+  max-width: 760px;
+}
+.epilogue-inner .eyebrow {
+  margin-bottom: 28px;
+}
+.epilogue h2 {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .future-card.future-text-card {
+    width: 42vw;
+    min-height: 190px;
+  }
+  .envelope.open .letter-paper {
+    height: 330px;
+    animation-name: letterLiftAndSettleMobile;
+  }
+  @keyframes letterLiftAndSettleMobile {
+    0% { transform: translateY(0) scale(.96); }
+    52% { transform: translateY(-42%) scale(1); }
+    100% { transform: translateY(-8%) scale(.98); }
+  }
+}
