@@ -19,7 +19,6 @@
     setText('#coverCaption', data.cover.caption);
     setText('#coverTitle', data.cover.title);
     setText('#coverAfter', data.cover.after);
-    setText('#audioLabel', data.audio.label);
     setText('#finalHeadline', data.finale.headline);
     setText('#finalSubline', data.finale.subline);
     setText('#epilogueText', data.finale.ending);
@@ -63,6 +62,58 @@
     }
   };
 
+
+  let audioContext = null;
+
+  const getAudioContext = () => {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return null;
+    if (!audioContext) audioContext = new AudioCtx();
+    if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+    return audioContext;
+  };
+
+  const tone = (frequency, endFrequency, duration = 0.12, gainValue = 0.035, delay = 0, type = 'sine') => {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const startAt = ctx.currentTime + delay;
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, startAt);
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency || frequency), startAt + duration);
+    gain.gain.setValueAtTime(0.0001, startAt);
+    gain.gain.exponentialRampToValueAtTime(gainValue, startAt + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+    oscillator.start(startAt);
+    oscillator.stop(startAt + duration + 0.03);
+  };
+
+  const playSound = kind => {
+    try {
+      if (kind === 'hold') {
+        tone(180, 260, 0.16, 0.018, 0, 'sine');
+      } else if (kind === 'open') {
+        tone(420, 560, 0.15, 0.035);
+        tone(620, 760, 0.16, 0.03, 0.08);
+        tone(820, 1040, 0.2, 0.028, 0.16);
+      } else if (kind === 'sparkle') {
+        tone(650, 1120, 0.13, 0.028);
+        tone(980, 1480, 0.11, 0.018, 0.07);
+      } else if (kind === 'heart') {
+        tone(480, 690, 0.1, 0.022);
+        tone(690, 900, 0.12, 0.018, 0.055);
+      } else if (kind === 'paper') {
+        tone(260, 340, 0.08, 0.012, 0, 'triangle');
+        tone(350, 470, 0.11, 0.012, 0.07, 'triangle');
+      } else {
+        tone(360, 450, 0.07, 0.014);
+      }
+    } catch {}
+  };
+
   const createIntro = () => {
     const btn = $('#holdButton');
     const intro = $('#intro');
@@ -85,6 +136,7 @@
       if (pct >= 100 && !completed) {
         completed = true;
         $('.hold-heart', btn).textContent = '♥';
+        playSound('open');
         burstHearts($('#burst'), 36);
         setTimeout(() => {
           intro.classList.add('opened');
@@ -99,6 +151,7 @@
     const down = e => {
       if (completed) return;
       e.preventDefault();
+      playSound('hold');
       if (e.pointerId !== undefined) {
         activePointerId = e.pointerId;
         try { btn.setPointerCapture(e.pointerId); } catch {}
@@ -200,21 +253,6 @@
       </article>`).join('');
   };
 
-  const buildJokes = () => {
-    const root = $('#jokeGrid');
-    root.innerHTML = '';
-    data.insideJokes.forEach((item, i) => {
-      const card = document.createElement('article');
-      card.className = 'joke-card reveal';
-      card.style.setProperty('--r', `${[-2.2, 1.6, -1.1, 2][i % 4]}deg`);
-      card.innerHTML = `
-        <div class="photo joke-photo"><span>inside joke ${i + 1}</span></div>
-        <div class="joke-copy"><span>PRIVATE EXHIBIT ${String(i + 1).padStart(2, '0')}</span><h3>${item.title}</h3><p>${item.text}</p></div>`;
-      root.appendChild(card);
-      photoFallback($('.joke-photo', card), item.photo, `02-joke-${String(i + 1).padStart(2, '0')}.jpg`);
-    });
-  };
-
   const buildCameraRoll = () => {
     const root = $('#cameraGroups');
     root.innerHTML = '';
@@ -274,8 +312,9 @@
           ${q.choices.map((choice, choiceIndex) => `<button type="button" data-choice="${choiceIndex}">${choice}</button>`).join('')}
         </div>
         <div class="quiz-answer" id="quizAnswer"></div>`;
-      $$('.quiz-choices button', root).forEach(btn => btn.addEventListener('click', () => {
-        $$('.quiz-choices button', root).forEach(b => { b.disabled = true; });
+      $('.quiz-choices button', root).forEach(btn => btn.addEventListener('click', () => {
+        playSound('tap');
+        $('.quiz-choices button', root).forEach(b => { b.disabled = true; });
         $('#quizAnswer').textContent = q.answer;
         setTimeout(() => { index++; render(); }, 1500);
       }));
@@ -284,38 +323,15 @@
     render();
   };
 
-  const setupAudio = () => {
-    const audio = $('#ourAudio');
-    const btn = $('#recordButton');
-    const status = $('#audioStatus');
-    audio.src = data.audio.file;
-
-    btn.addEventListener('click', async () => {
-      if (!audio.paused) {
-        audio.pause();
-        btn.classList.remove('playing');
-        status.textContent = 'tap to play ♫';
-        return;
-      }
-      try {
-        await audio.play();
-        btn.classList.add('playing');
-        status.textContent = 'playing ♫';
-      } catch {
-        status.textContent = 'add EDIT_HERE/music/our-song.mp3';
-      }
-    });
-    audio.addEventListener('ended', () => {
-      btn.classList.remove('playing');
-      status.textContent = 'play again ♫';
-    });
-  };
-
   const buildTinyThings = () => {
     const root = $('#reasonGrid');
     root.innerHTML = data.tinyThings.map((_, i) => `<button class="reason-heart" data-reason="${i}" aria-label="Tiny thing ${i + 1}">♥</button>`).join('');
     const modal = $('#reasonModal');
-    $$('.reason-heart', root).forEach(btn => btn.addEventListener('click', () => {
+    $('.reason-heart', root).forEach(btn => btn.addEventListener('click', () => {
+      playSound('heart');
+      btn.classList.remove('heart-tapped');
+      void btn.offsetWidth;
+      btn.classList.add('heart-tapped');
       const i = Number(btn.dataset.reason);
       $('#reasonNumber').textContent = `Tiny thing ${String(i + 1).padStart(2, '0')} / ${data.tinyThings.length}`;
       $('#reasonText').textContent = data.tinyThings[i];
@@ -360,39 +376,51 @@
   };
 
   const setupHiddenHearts = () => {
-    const targets = ['things-i-know', 'inside-jokes', 'camera-roll', 'messages', 'museum'];
-    const found = new Set(JSON.parse(localStorage.getItem('anniv-hearts-v2') || '[]'));
+    const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'museum'];
+    const found = new Set(JSON.parse(localStorage.getItem('anniv-hearts-v3') || '[]'));
     const template = $('#hiddenHeartTemplate');
     const score = $('#heartScore');
     const message = $('#secretMessage');
 
     targets.forEach((id, i) => {
+      if (found.has(i)) return;
       const section = document.getElementById(id);
       if (!section) return;
+
       const heart = template.content.firstElementChild.cloneNode(true);
       heart.dataset.index = i;
       heart.style.top = `${16 + ((i * 19) % 62)}%`;
       heart.style[i % 2 ? 'left' : 'right'] = `${4 + i * 2}%`;
-      if (found.has(i)) heart.classList.add('found');
       section.appendChild(heart);
+
       heart.addEventListener('click', () => {
+        if (heart.classList.contains('collecting')) return;
+        playSound('sparkle');
         found.add(i);
-        heart.classList.add('found');
-        localStorage.setItem('anniv-hearts-v2', JSON.stringify([...found]));
+        localStorage.setItem('anniv-hearts-v3', JSON.stringify([...found]));
         score.textContent = found.size;
         message.textContent = `♥ ${data.hiddenSecrets[i]}`;
+        heart.classList.add('collecting');
+        setTimeout(() => heart.remove(), 720);
+
         if (found.size === targets.length) {
-          setTimeout(() => { message.textContent = 'You found all five. Of course you did. 🥹❤️'; }, 1600);
+          setTimeout(() => {
+            message.textContent = 'You found all five. Of course you did. 🥹❤️';
+            playSound('open');
+          }, 1200);
         }
       });
     });
+
     score.textContent = found.size;
+    if (found.size === targets.length) message.textContent = 'You found all five. Of course you did. 🥹❤️';
   };
 
   const buildFuture = () => {
     $('#futurePolaroids').innerHTML = data.future.map((text, i) => `
-      <div class="future-card" style="--r:${[-7, 4, -2, 5, -4][i % 5]}deg;--delay:${i * 120}ms">
-        <div>?</div><p>${text}<br><small>photo coming soon…</small></p>
+      <div class="future-card future-text-card" style="--r:${[-5, 3, -2, 4, -3][i % 5]}deg;--delay:${i * 120}ms">
+        <span class="future-number">0${i + 1}</span>
+        <p>${text}</p>
       </div>`).join('');
   };
 
@@ -400,6 +428,7 @@
     $('#letterBody').innerHTML = data.letter.map(p => `<p>${p}</p>`).join('');
     const env = $('#envelope');
     env.addEventListener('click', () => {
+      playSound('paper');
       const open = env.classList.toggle('open');
       env.setAttribute('aria-expanded', String(open));
     });
@@ -407,23 +436,6 @@
 
   const setupFinale = () => {
     photoFallback($('#finaleBg'), data.finale.photo, '08-finale.jpg');
-    const strip = $('#filmStrip');
-    const sources = [
-      data.cover.photo,
-      data.thisIsUs[0]?.photo,
-      data.cameraRoll[0]?.photos?.[0],
-      data.cameraRoll[1]?.photos?.[0],
-      data.thenNow.now
-    ].filter(Boolean);
-    strip.innerHTML = '';
-    sources.forEach((src, i) => {
-      const el = document.createElement('div');
-      el.className = 'photo';
-      el.innerHTML = `<span>memory ${i + 1}</span>`;
-      strip.appendChild(el);
-      photoFallback(el, src, `memory ${i + 1}`);
-    });
-
     const epi = $('#epilogue');
     $('#chapterSix').addEventListener('click', () => {
       burstHearts($('#confetti'), 48);
@@ -475,12 +487,10 @@
   buildCounter();
   buildUsMontage();
   buildKnowGrid();
-  buildJokes();
   buildCameraRoll();
   buildMessages();
   buildChanged();
   buildQuiz();
-  setupAudio();
   buildTinyThings();
   buildMuseum();
   setupCompare();
