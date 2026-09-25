@@ -237,6 +237,41 @@
 
   const playSound = kind => playMediaSound(kind === 'hold' ? 'tap' : kind);
 
+  const playOpeningChime = () => {
+    const audio = mediaSounds.hold;
+    if (!audio) return playMediaSound('open');
+
+    try {
+      audio.pause();
+      audio.src = mediaUrls.open;
+      audio.currentTime = 0;
+      audio.volume = 1;
+      audio.muted = false;
+
+      const restore = () => {
+        try {
+          audio.removeEventListener('ended', restore);
+          audio.pause();
+          audio.src = mediaUrls.hold;
+          audio.load();
+        } catch {}
+      };
+
+      audio.addEventListener('ended', restore, { once: true });
+      const result = audio.play();
+      if (result && typeof result.catch === 'function') {
+        result.catch(() => {
+          restore();
+          playMediaSound('open');
+        });
+      }
+      return true;
+    } catch {
+      playMediaSound('open');
+      return false;
+    }
+  };
+
   const haptic = kind => {
     const patterns = {
       tick: 10,
@@ -332,7 +367,7 @@
         stopHoldRampSound();
         haptic('complete');
         $('.hold-heart', btn).textContent = '♥';
-        playSound('open');
+        playOpeningChime();
         burstHearts($('#burst'), 36);
         setTimeout(() => {
           intro.classList.add('opened');
