@@ -82,7 +82,7 @@ window.ANNIVERSARY = {
     { caption: "Romance.", image: "./EDIT_HERE/ics/31.jpeg" },
     { caption: "Also romance.", image: "./EDIT_HERE/ics/32.jpeg" },
     { caption: "One I never want to lose.", image: "./EDIT_HERE/ics/33.jpeg" },
-    { caption: "From an older version of us.", image: "./EDIT_HERE/messages/04-old-chat.jpg" }
+    { caption: "From an older version of us.", image: "./EDIT_HERE/ics/34.jpeg" }
   ],
 
   // 07 — WHAT CHANGED BECAUSE OF YOU
@@ -132,16 +132,6 @@ window.ANNIVERSARY = {
     "The fact that we still have new things to learn about each other.",
     "All the silly parts we somehow kept.",
     "That after everything, I still want the next chapter."
-  ],
-
-  // 10 — THE MUSEUM OF US
-  museum: [
-    { icon: "🎟️", title: "A ticket", text: "EDIT: movie / event / trip and why it matters", image: "./EDIT_HERE/photos/06-museum-ticket.jpg" },
-    { icon: "🍽️", title: "A meal", text: "EDIT: your place / order / story", image: "./EDIT_HERE/photos/06-museum-food.jpg" },
-    { icon: "📍", title: "A place", text: "EDIT: one location that means something", image: "./EDIT_HERE/photos/06-museum-place.jpg" },
-    { icon: "🎁", title: "A thing", text: "EDIT: gift / object / random keepsake", image: "./EDIT_HERE/photos/06-museum-gift.jpg" },
-    { icon: "📷", title: "A photo", text: "EDIT: why this specific image matters", image: "./EDIT_HERE/photos/06-museum-photo.jpg" },
-    { icon: "🚗", title: "A drive", text: "EDIT: one drive or road that became part of your story", image: "./EDIT_HERE/photos/06-museum-drive.jpg" }
   ],
 
   // 11 — THEN / NOW

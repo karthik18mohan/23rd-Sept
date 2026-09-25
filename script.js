@@ -581,21 +581,6 @@
     modal.addEventListener('click', e => { if (e.target === modal) close(); });
   };
 
-  const buildMuseum = () => {
-    const root = $('#museumGrid');
-    root.innerHTML = '';
-    data.museum.forEach((item, i) => {
-      const card = document.createElement('article');
-      card.className = 'museum-card reveal';
-      card.innerHTML = `
-        <div class="museum-number">EXHIBIT ${String(i + 1).padStart(2, '0')}</div>
-        <div class="photo museum-photo"><span>${item.image.split('/').pop()}</span></div>
-        <div class="museum-copy"><span class="museum-icon">${item.icon}</span><h3>${item.title}</h3><p>${item.text}</p></div>`;
-      root.appendChild(card);
-      photoFallback($('.museum-photo', card), item.image, item.image.split('/').pop());
-    });
-  };
-
   const setupCompare = () => {
     photoFallback($('#thenPhoto'), data.thenNow.then, '07-then.jpg');
     photoFallback($('#nowPhoto'), data.thenNow.now, '07-now.jpg');
@@ -657,7 +642,7 @@
   };
 
   const setupHiddenHearts = () => {
-    const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'museum'];
+    const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'then-now'];
     const found = new Set();
     const template = $('#hiddenHeartTemplate');
     const score = $('#heartScore');
@@ -839,7 +824,6 @@
   safeRun('what changed', buildChanged);
   safeRun('quiz', buildQuiz);
   safeRun('tiny things', buildTinyThings);
-  safeRun('museum', buildMuseum);
   safeRun('compare', setupCompare);
   safeRun('hidden hearts', setupHiddenHearts);
   safeRun('future', buildFuture);
