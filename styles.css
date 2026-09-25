@@ -1650,3 +1650,32 @@ input[type="range"] {
   filter:
     drop-shadow(0 0 var(--hold-glow-px,10px) rgba(245,168,186,var(--hold-glow,.35)));
 }
+
+/* FINAL CAMERA TITLE CLEARANCE */
+/* Keep the first category below the Camera Roll title.
+   Later categories do not need this space because the title lives only at
+   the top of the whole Camera Roll section. */
+#camera-roll .camera-group:first-child {
+  padding-top: clamp(190px, 24vh, 235px);
+}
+
+@media (max-width:760px) {
+  #camera-roll .camera-group:first-child {
+    padding-top: 150px;
+  }
+
+  #camera-roll > .section-wrap > .display {
+    line-height: .92;
+    max-width: calc(100% - 32px);
+  }
+
+  #camera-roll .camera-group:first-child .camera-heading {
+    margin-top: 4px;
+  }
+}
+
+@media (max-height:700px) and (max-width:760px) {
+  #camera-roll .camera-group:first-child {
+    padding-top: 132px;
+  }
+}
