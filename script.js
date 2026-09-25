@@ -330,6 +330,7 @@
       btn.style.setProperty('--hold', `${pct}%`);
       btn.style.setProperty('--hold-scale', String(1 + (pct / 100) * 0.18));
       btn.style.setProperty('--hold-glow', `${0.25 + (pct / 100) * 0.75}`);
+      btn.style.setProperty('--hold-glow-px', `${10 + (pct / 100) * 18}px`);
 
       const nextStep = pct >= 75 ? 3 : pct >= 50 ? 2 : pct >= 25 ? 1 : 0;
       if (nextStep > hapticStep) {
