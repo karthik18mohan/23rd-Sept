@@ -13,12 +13,6 @@ Put your images here with these exact names.
 - 01-us-05.jpg
 - 01-us-06.jpg
 
-## Inside jokes
-- 02-joke-01.jpg
-- 02-joke-02.jpg
-- 02-joke-03.jpg
-- 02-joke-04.jpg
-
 ## Camera Roll — candids
 - 03-candid-01.jpg
 - 03-candid-02.jpg
@@ -40,7 +34,7 @@ Put your images here with these exact names.
 - 06-museum-place.jpg
 - 06-museum-gift.jpg
 - 06-museum-photo.jpg
-- 06-museum-song.jpg
+- 06-museum-drive.jpg
 
 ## Then / Now
 - 07-then.jpg
