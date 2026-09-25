@@ -37,7 +37,7 @@ window.ANNIVERSARY = {
 
   // 03 — THINGS I KNOW ABOUT YOU
   thingsIKnow: [
-    { emoji: "☕", label: "Your order is always", value: "tomato beda" },
+    { emoji: "🍅", label: "Your order is always", value: "tomato beda" },
     { emoji: "😤", label: "Your angry message is", value: "hmmmmmmm" },
     { emoji: "🧥", label: "Your favourite thing to steal", value: "hoodie" },
     { emoji: "💬", label: "A phrase you say constantly", value: "babba hogana" },
