@@ -96,7 +96,7 @@
 
   let audioContext = null;
 
-  const ensureAudioContext = async () => {
+  const getAudioContextSync = () => {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return null;
 
@@ -107,10 +107,26 @@
     } catch {}
 
     if (!audioContext) audioContext = new AudioCtx();
+
     if (audioContext.state === 'suspended') {
-      try { await audioContext.resume(); } catch {}
+      try {
+        const resumePromise = audioContext.resume();
+        if (resumePromise && typeof resumePromise.catch === 'function') {
+          resumePromise.catch(() => {});
+        }
+      } catch {}
     }
+
     return audioContext;
+  };
+
+  const ensureAudioContext = async () => {
+    const ctx = getAudioContextSync();
+    if (!ctx) return null;
+    if (ctx.state === 'suspended') {
+      try { await ctx.resume(); } catch {}
+    }
+    return ctx;
   };
 
   const toneOnContext = (ctx, frequency, endFrequency, duration = 0.12, gainValue = 0.065, delay = 0, type = 'sine') => {
@@ -130,29 +146,39 @@
   };
 
   const playSound = kind => {
-    ensureAudioContext().then(ctx => {
-      if (!ctx || ctx.state !== 'running') return;
+    const ctx = getAudioContextSync();
+    if (!ctx) return;
+
+    const run = () => {
+      if (ctx.state !== 'running') return;
       try {
-        if (kind === 'hold') {
-          toneOnContext(ctx, 190, 330, 0.18, 0.05, 0, 'sine');
-        } else if (kind === 'open') {
-          toneOnContext(ctx, 420, 620, 0.16, 0.075);
-          toneOnContext(ctx, 620, 880, 0.18, 0.065, 0.08);
-          toneOnContext(ctx, 860, 1180, 0.22, 0.055, 0.16);
+        if (kind === 'open') {
+          toneOnContext(ctx, 360, 620, 0.18, 0.085);
+          toneOnContext(ctx, 620, 900, 0.20, 0.075, 0.09);
+          toneOnContext(ctx, 900, 1320, 0.24, 0.065, 0.19);
         } else if (kind === 'sparkle') {
-          toneOnContext(ctx, 700, 1300, 0.13, 0.06);
-          toneOnContext(ctx, 1050, 1700, 0.12, 0.045, 0.065);
+          toneOnContext(ctx, 700, 1300, 0.13, 0.065);
+          toneOnContext(ctx, 1050, 1700, 0.12, 0.05, 0.065);
         } else if (kind === 'heart') {
-          toneOnContext(ctx, 500, 760, 0.11, 0.055);
-          toneOnContext(ctx, 720, 1040, 0.13, 0.045, 0.055);
+          toneOnContext(ctx, 500, 760, 0.11, 0.06);
+          toneOnContext(ctx, 720, 1040, 0.13, 0.05, 0.055);
         } else if (kind === 'paper') {
-          toneOnContext(ctx, 240, 360, 0.09, 0.035, 0, 'triangle');
-          toneOnContext(ctx, 360, 520, 0.12, 0.032, 0.07, 'triangle');
+          toneOnContext(ctx, 240, 360, 0.10, 0.04, 0, 'triangle');
+          toneOnContext(ctx, 360, 520, 0.13, 0.035, 0.07, 'triangle');
         } else {
-          toneOnContext(ctx, 380, 520, 0.08, 0.04);
+          toneOnContext(ctx, 380, 540, 0.09, 0.045);
         }
       } catch {}
-    }).catch(() => {});
+    };
+
+    if (ctx.state === 'running') {
+      run();
+    } else {
+      try {
+        const p = ctx.resume();
+        if (p && typeof p.then === 'function') p.then(run).catch(() => {});
+      } catch {}
+    }
   };
 
 
@@ -196,34 +222,47 @@
   const startHoldRampSound = durationMs => {
     stopHoldRampSound();
     const token = ++holdSoundToken;
+    const ctx = getAudioContextSync();
+    if (!ctx) return;
 
-    ensureAudioContext().then(ctx => {
-      if (!ctx || ctx.state !== 'running' || token !== holdSoundToken) return;
+    const startRamp = () => {
+      if (token !== holdSoundToken || ctx.state !== 'running') return;
 
-      const oscillator = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const now = ctx.currentTime;
-      const duration = Math.max(0.25, durationMs / 1000);
+      try {
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        const duration = Math.max(0.25, durationMs / 1000);
 
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(145, now);
-      oscillator.frequency.exponentialRampToValueAtTime(760, now + duration);
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(120, now);
+        oscillator.frequency.exponentialRampToValueAtTime(880, now + duration);
 
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.018, now + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.082, now + duration);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.025, now + 0.045);
+        gain.gain.exponentialRampToValueAtTime(0.11, now + duration);
 
-      oscillator.connect(gain);
-      gain.connect(ctx.destination);
-      oscillator.start(now);
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.start(now);
 
-      activeHoldSound = { ctx, oscillator, gain, token };
-    }).catch(() => {});
+        activeHoldSound = { ctx, oscillator, gain, token };
+      } catch {}
+    };
+
+    if (ctx.state === 'running') {
+      startRamp();
+    } else {
+      try {
+        const p = ctx.resume();
+        if (p && typeof p.then === 'function') p.then(startRamp).catch(() => {});
+      } catch {}
+    }
   };
 
   // Prime Web Audio on the first real user gesture. This is especially
   // important on iPhone/Safari, which keeps AudioContext suspended otherwise.
-  const unlockAudio = () => { ensureAudioContext().catch(() => {}); };
+  const unlockAudio = () => { getAudioContextSync(); };
   document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
   document.addEventListener('touchstart', unlockAudio, { once: true, capture: true, passive: true });
 
