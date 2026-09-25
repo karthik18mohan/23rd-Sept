@@ -674,7 +674,7 @@
   };
 
   const observers = () => {
-    const revealTargets = $('.reveal,.future-card');
+    const revealTargets = [...document.querySelectorAll('.reveal,.future-card')];
     if (!('IntersectionObserver' in window)) {
       revealTargets.forEach(el => el.classList.add('visible'));
     } else {
