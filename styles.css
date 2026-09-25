@@ -679,3 +679,321 @@ button { -webkit-tap-highlight-color: transparent; }
   opacity: 1 !important;
   transform: none !important;
 }
+
+/* SCREEN-SIZED COMPOSITION OVERRIDES */
+.scene:not(.intro-scene) {
+  min-height: 100svh;
+  padding-top: clamp(36px, 5vh, 58px);
+  padding-bottom: clamp(36px, 5vh, 58px);
+}
+.scene .display {
+  font-size: clamp(2.8rem, 6vw, 5.8rem);
+  margin-bottom: 16px;
+}
+.scene .eyebrow { margin-bottom: 10px; }
+
+/* Keep the opening/cover compact enough to feel like one complete scene. */
+#cover .hero-polaroid {
+  width: min(250px, 58vw);
+  margin-bottom: 24px;
+}
+#cover .photo-main { aspect-ratio: 4/4.8; }
+#cover .counter-grid { margin-bottom: 12px; }
+#cover .counter-unit { padding: 11px 6px; }
+#cover .counter-unit strong { font-size: clamp(1.45rem,3vw,2.4rem); }
+
+/* This Is Us — six cards, one screen. */
+.montage-scene { padding-top: 42px; padding-bottom: 42px; }
+.us-montage {
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
+  margin-top: 22px;
+}
+.us-card,
+.us-card:nth-child(3n + 1),
+.us-card:nth-child(3n + 2),
+.us-card:nth-child(3n + 3) {
+  grid-column: auto;
+  margin-top: 0;
+  transform: translateY(var(--ambient-y,0));
+}
+.us-photo { aspect-ratio: 16/9; }
+.us-copy { padding: 12px 13px 14px; }
+.us-copy h3 { font-size: clamp(1.1rem,1.8vw,1.55rem); margin-bottom: 4px; }
+.us-copy p { font-size: .78rem; line-height: 1.35; }
+
+/* Things I Know — 3x2. */
+.know-grid { gap: 10px; margin-top: 22px; }
+.know-card {
+  min-height: 145px;
+  padding: 16px;
+  transform: translateY(var(--ambient-y,0));
+}
+.know-card:nth-child(even),
+.know-card.visible:nth-child(even) { transform: translateY(var(--ambient-y,0)); }
+.know-emoji { font-size: 1.55rem; }
+.know-label { font-size: .58rem; margin-bottom: 6px; }
+.know-card strong { font-size: clamp(1rem,1.8vw,1.45rem); }
+
+/* Camera Roll — three compact rows of three photos. */
+.camera-groups { margin-top: 24px; }
+.camera-group { margin-bottom: 14px; }
+.camera-heading {
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.camera-heading > span { font-size: 1.7rem; }
+.camera-heading h3 { font-size: clamp(1.15rem,2vw,1.7rem); margin-bottom: 2px; }
+.camera-heading p { font-size: .72rem; }
+.camera-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
+.camera-photo {
+  aspect-ratio: 16/10;
+  border-width: 5px;
+  transform: translateY(var(--ambient-y,0)) rotate(var(--tilt));
+}
+.camera-photo.visible { transform: translateY(var(--ambient-y,0)) rotate(var(--tilt)); }
+.camera-photo:nth-child(2) { margin-top: 0; }
+
+/* Messages — 2x2 on phone, one row on larger screens. */
+.message-scene { min-height:100svh; }
+.message-strip { margin-top: 22px; gap: 10px; }
+.message-card {
+  padding: 6px 6px 12px;
+  transform: translateY(var(--ambient-y,0)) rotate(var(--r));
+}
+.message-card.visible { transform: translateY(var(--ambient-y,0)) rotate(var(--r)); }
+.message-card:nth-child(even) { margin-top: 0; }
+.message-shot { aspect-ratio: 9/13; }
+.message-card p { margin: 7px 5px 0; font-size: .95rem; }
+
+/* What Changed — compact statement wall. */
+.changed-scene { min-height:100svh; }
+.changed-lines {
+  padding: 16px 0 0;
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 18px 26px;
+}
+.changed-line {
+  font-size: clamp(1.55rem,3.4vw,3rem);
+  margin:0;
+}
+.changed-final { grid-column:1/-1; }
+
+/* Quiz / hearts */
+.quiz-card { margin-top:24px; min-height:300px; padding:28px; }
+.reason-grid { margin-top:22px; gap:8px; max-width:620px; }
+.reason-heart { border-radius:18px; }
+
+/* Museum — 3x2 and compact. */
+.museum-grid {
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-top: 22px;
+}
+.museum-card {
+  padding: 7px 7px 12px;
+  transform: translateY(var(--ambient-y,0));
+}
+.museum-number { padding:2px 2px 6px; font-size:.52rem; }
+.museum-photo { aspect-ratio:16/8; }
+.museum-copy { padding:9px 7px 0; }
+.museum-icon { font-size:1.15rem; }
+.museum-copy h3 { font-size:1.35rem; margin:3px 0 2px; }
+.museum-copy p { font-size:.7rem; line-height:1.25; }
+
+/* Then/Now */
+.compare-card { margin-top:22px; max-width:720px; }
+.compare-frame { aspect-ratio:16/8.5; }
+.compare-card label { margin:10px 0 4px; }
+
+/* Hidden-heart summary gets its own full scene. */
+.secret-scene { min-height:100svh; }
+
+/* Future = 3 cards + 2 cards, all inside one scene. */
+.future-prelude {
+  font-size:clamp(1.5rem,3vw,2.7rem);
+  margin-bottom:4px;
+}
+.future-polaroids {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  width:min(760px,100%);
+  margin:24px auto 0;
+}
+.future-card.future-text-card {
+  grid-column:span 2;
+  width:auto;
+  min-height:135px;
+  padding:14px 13px;
+  transform: translateY(var(--ambient-y,0)) rotate(var(--r));
+}
+.future-card.future-text-card.visible {
+  transform: translateY(var(--ambient-y,0)) rotate(var(--r));
+}
+.future-card.future-text-card:nth-child(4) { grid-column:2 / span 2; }
+.future-card.future-text-card:nth-child(5) { grid-column:4 / span 2; }
+.future-card.future-text-card::before { font-size:1.4rem; }
+.future-card.future-text-card p { font-size:clamp(1rem,1.8vw,1.35rem); }
+.future-ending { margin-top:18px; }
+
+/* Letter + finale strictly screen-sized. */
+.letter-scene { min-height:100svh; }
+.envelope {
+  width:min(470px,88vw);
+  height:270px;
+  margin-top:30px;
+}
+.letter-paper { overflow:auto; }
+.letter-inner {
+  padding:24px 26px 30px;
+  font-size:.95rem;
+  line-height:1.42;
+}
+.letter-inner strong,
+.letter-inner em { font-size:1.3rem; margin-bottom:10px; }
+.letter-inner p { margin-bottom:10px; }
+.envelope.open .letter-paper { height:315px; }
+
+.finale-scene {
+  min-height:100svh;
+  padding-bottom:48px;
+}
+.final-stat { margin:8px 0; }
+.finale-copy h3 { margin:18px 0 8px; }
+.chapter-six { margin-top:18px; }
+.epilogue { min-height:100svh; }
+
+/* Gentle living motion inside otherwise static scenes. */
+.us-photo,
+.museum-photo {
+  animation: imageBreath 7s ease-in-out infinite alternate;
+}
+.know-emoji {
+  animation: emojiFloat 4.2s ease-in-out infinite;
+}
+.reason-heart {
+  animation: reasonIdle 3.6s ease-in-out infinite;
+  animation-delay: calc(var(--i,0) * 40ms);
+}
+@keyframes imageBreath {
+  from { background-size:100%; }
+  to { background-size:104%; }
+}
+@keyframes emojiFloat {
+  50% { transform:translateY(-5px) rotate(4deg); }
+}
+@keyframes reasonIdle {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-3px); }
+}
+
+@media (max-width:760px) {
+  .scene:not(.intro-scene) {
+    padding-top:28px;
+    padding-bottom:28px;
+  }
+  .scene .display {
+    font-size:clamp(2.35rem,10vw,3.8rem);
+    margin-bottom:10px;
+  }
+  #cover .hero-polaroid { width:190px; margin-bottom:16px; }
+  #cover .counter-grid { grid-template-columns:repeat(3,1fr); gap:5px; }
+  #cover .counter-unit { padding:8px 4px; border-radius:12px; }
+  #cover .counter-unit strong { font-size:1.35rem; }
+  #cover .counter-unit span { font-size:.5rem; }
+
+  .us-montage {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:7px;
+    margin-top:12px;
+  }
+  .us-card,
+  .us-card:nth-child(3n + 1),
+  .us-card:nth-child(3n + 2),
+  .us-card:nth-child(3n + 3) { margin:0; }
+  .us-photo { aspect-ratio:16/9; }
+  .us-copy { padding:7px 8px 9px; }
+  .us-copy h3 { font-size:.92rem; }
+  .us-copy p { font-size:.62rem; }
+
+  .know-grid { grid-template-columns:repeat(2,1fr); gap:7px; margin-top:12px; }
+  .know-card { min-height:112px; padding:11px; }
+  .know-card strong { font-size:.95rem; }
+  .know-label { font-size:.5rem; }
+  .know-emoji { font-size:1.3rem; }
+
+  .camera-groups { margin-top:12px; }
+  .camera-group { margin-bottom:8px; }
+  .camera-heading { grid-template-columns:26px 1fr; gap:6px; margin-bottom:5px; }
+  .camera-heading > span { font-size:1.2rem; }
+  .camera-heading h3 { font-size:.95rem; }
+  .camera-heading p { font-size:.58rem; }
+  .camera-row { grid-template-columns:repeat(3,1fr); gap:4px; }
+  .camera-photo,
+  .camera-photo:nth-child(3) {
+    width:100%;
+    grid-column:auto;
+    aspect-ratio:4/4.5;
+    border-width:3px;
+  }
+
+  .message-strip { grid-template-columns:repeat(2,1fr); gap:7px; margin-top:12px; }
+  .message-card:nth-child(even) { margin-top:0; }
+  .message-shot { aspect-ratio:9/11; }
+  .message-card p { font-size:.78rem; }
+
+  .changed-lines { gap:11px; }
+  .changed-line { font-size:clamp(1.25rem,5.3vw,1.75rem); }
+
+  .quiz-card { margin-top:12px; min-height:260px; padding:20px; }
+  .reason-grid { margin-top:12px; gap:5px; }
+  .reason-heart { border-radius:12px; }
+
+  .museum-grid { grid-template-columns:repeat(2,1fr); gap:6px; margin-top:12px; }
+  .museum-photo { aspect-ratio:16/7; }
+  .museum-copy { padding:6px 5px 0; }
+  .museum-copy h3 { font-size:1rem; }
+  .museum-copy p { font-size:.6rem; }
+  .museum-number { font-size:.45rem; }
+
+  .compare-card { margin-top:12px; }
+  .compare-frame { aspect-ratio:16/9; }
+  .compare-card label { font-size:.9rem; }
+
+  .future-polaroids { gap:6px; margin-top:14px; }
+  .future-card.future-text-card {
+    min-height:110px;
+    padding:10px;
+  }
+  .future-card.future-text-card p { font-size:.95rem; }
+  .future-ending { margin-top:12px; font-size:1rem; }
+
+  .envelope { height:235px; margin-top:18px; }
+  .letter-inner { padding:18px; font-size:.82rem; line-height:1.35; }
+  .letter-inner strong,.letter-inner em { font-size:1.1rem; }
+  .envelope.open .letter-paper { height:285px; }
+
+  .finale-copy h3 { font-size:clamp(1.9rem,8vw,2.8rem); }
+}
+
+@media (max-height:700px) {
+  .scene:not(.intro-scene) { padding-top:20px; padding-bottom:20px; }
+  .scene .display { font-size:clamp(2rem,7vw,3rem); }
+  #cover .hero-polaroid { width:160px; margin-bottom:10px; }
+  .us-copy p,
+  .museum-copy p { display:none; }
+  .camera-heading p { display:none; }
+  .future-card.future-text-card { min-height:90px; }
+}
+
+/* Background imagery gently shifts so the page never feels frozen. */
+.finale-bg { animation: finaleDrift 12s ease-in-out infinite alternate; }
+@keyframes finaleDrift {
+  from { transform:scale(1.02) translate3d(-.5%,0,0); }
+  to { transform:scale(1.07) translate3d(.8%,-.6%,0); }
+}
