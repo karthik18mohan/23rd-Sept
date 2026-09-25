@@ -56,6 +56,7 @@
     setText('#finalHeadline', data.finale.headline);
     setText('#finalSubline', data.finale.subline);
     setText('#epilogueText', data.finale.ending);
+    setText('#letterGreeting', data.letterGreeting || `Hiii ${data.partnerName},`);
   };
 
   const photoFallback = (el, src, label) => {
@@ -99,17 +100,17 @@
 
   let audioContext = null;
 
-  const getAudioContext = () => {
+  const ensureAudioContext = async () => {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return null;
     if (!audioContext) audioContext = new AudioCtx();
-    if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+    if (audioContext.state === 'suspended') {
+      try { await audioContext.resume(); } catch {}
+    }
     return audioContext;
   };
 
-  const tone = (frequency, endFrequency, duration = 0.12, gainValue = 0.035, delay = 0, type = 'sine') => {
-    const ctx = getAudioContext();
-    if (!ctx) return;
+  const toneOnContext = (ctx, frequency, endFrequency, duration = 0.12, gainValue = 0.065, delay = 0, type = 'sine') => {
     const startAt = ctx.currentTime + delay;
     const oscillator = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -117,36 +118,45 @@
     oscillator.frequency.setValueAtTime(frequency, startAt);
     oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency || frequency), startAt + duration);
     gain.gain.setValueAtTime(0.0001, startAt);
-    gain.gain.exponentialRampToValueAtTime(gainValue, startAt + 0.015);
+    gain.gain.exponentialRampToValueAtTime(gainValue, startAt + 0.012);
     gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
     oscillator.connect(gain);
     gain.connect(ctx.destination);
     oscillator.start(startAt);
-    oscillator.stop(startAt + duration + 0.03);
+    oscillator.stop(startAt + duration + 0.04);
   };
 
   const playSound = kind => {
-    try {
-      if (kind === 'hold') {
-        tone(180, 260, 0.16, 0.018, 0, 'sine');
-      } else if (kind === 'open') {
-        tone(420, 560, 0.15, 0.035);
-        tone(620, 760, 0.16, 0.03, 0.08);
-        tone(820, 1040, 0.2, 0.028, 0.16);
-      } else if (kind === 'sparkle') {
-        tone(650, 1120, 0.13, 0.028);
-        tone(980, 1480, 0.11, 0.018, 0.07);
-      } else if (kind === 'heart') {
-        tone(480, 690, 0.1, 0.022);
-        tone(690, 900, 0.12, 0.018, 0.055);
-      } else if (kind === 'paper') {
-        tone(260, 340, 0.08, 0.012, 0, 'triangle');
-        tone(350, 470, 0.11, 0.012, 0.07, 'triangle');
-      } else {
-        tone(360, 450, 0.07, 0.014);
-      }
-    } catch {}
+    ensureAudioContext().then(ctx => {
+      if (!ctx || ctx.state !== 'running') return;
+      try {
+        if (kind === 'hold') {
+          toneOnContext(ctx, 190, 330, 0.18, 0.05, 0, 'sine');
+        } else if (kind === 'open') {
+          toneOnContext(ctx, 420, 620, 0.16, 0.075);
+          toneOnContext(ctx, 620, 880, 0.18, 0.065, 0.08);
+          toneOnContext(ctx, 860, 1180, 0.22, 0.055, 0.16);
+        } else if (kind === 'sparkle') {
+          toneOnContext(ctx, 700, 1300, 0.13, 0.06);
+          toneOnContext(ctx, 1050, 1700, 0.12, 0.045, 0.065);
+        } else if (kind === 'heart') {
+          toneOnContext(ctx, 500, 760, 0.11, 0.055);
+          toneOnContext(ctx, 720, 1040, 0.13, 0.045, 0.055);
+        } else if (kind === 'paper') {
+          toneOnContext(ctx, 240, 360, 0.09, 0.035, 0, 'triangle');
+          toneOnContext(ctx, 360, 520, 0.12, 0.032, 0.07, 'triangle');
+        } else {
+          toneOnContext(ctx, 380, 520, 0.08, 0.04);
+        }
+      } catch {}
+    }).catch(() => {});
   };
+
+  // Prime Web Audio on the first real user gesture. This is especially
+  // important on iPhone/Safari, which keeps AudioContext suspended otherwise.
+  const unlockAudio = () => { ensureAudioContext().catch(() => {}); };
+  document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
+  document.addEventListener('touchstart', unlockAudio, { once: true, capture: true, passive: true });
 
   const createIntro = () => {
     const btn = $('#holdButton');
@@ -504,6 +514,31 @@
     });
   };
 
+  const setupAmbientMotion = () => {
+    const floating = $$('.us-card,.know-card,.camera-photo,.message-card,.museum-card,.future-card');
+    if (!floating.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let ticking = false;
+    const update = () => {
+      const vh = innerHeight || 800;
+      floating.forEach((el, i) => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const distance = (center - vh / 2) / vh;
+        const amount = Math.max(-1, Math.min(1, distance)) * (5 + (i % 3) * 2);
+        el.style.setProperty('--ambient-y', `${amount.toFixed(1)}px`);
+      });
+      ticking = false;
+    };
+    addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }, { passive: true });
+    update();
+  };
+
   const observers = () => {
     const revealTargets = $('.reveal,.future-card');
     if (!('IntersectionObserver' in window)) {
@@ -557,5 +592,6 @@
   safeRun('letter', buildLetter);
   safeRun('finale', setupFinale);
   safeRun('observers', observers);
+  safeRun('ambient motion', setupAmbientMotion);
   safeRun('heart trail', heartTrail);
 })();
