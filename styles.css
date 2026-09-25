@@ -518,18 +518,60 @@ button { -webkit-tap-highlight-color: transparent; }
 @keyframes collectHeart {
   0% {
     opacity:1;
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
     box-shadow: 0 0 20px #ff91ad, 0 0 48px rgba(255,76,125,.8);
   }
-  35% {
+  38% {
     opacity:1;
-    transform: scale(1.55) rotate(-10deg);
-    box-shadow: 0 0 35px #fff, 0 0 80px #ff5f8e;
+    transform: scale(1.95) rotate(-7deg);
+    box-shadow: 0 0 45px #fff, 0 0 95px #ff5f8e, 0 0 130px rgba(255,95,142,.55);
+    filter: brightness(1.45);
+  }
+  56% {
+    opacity:1;
+    transform: scale(2.18) rotate(5deg);
+    filter: brightness(2);
   }
   100% {
     opacity:0;
-    transform: scale(.05) rotate(30deg) translateY(-28px);
-    filter: blur(5px);
+    transform: scale(.12) rotate(28deg);
+    filter: blur(7px) brightness(1.8);
+  }
+}
+.collect-spark {
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:6;
+  pointer-events:none;
+  color:#fff1f6;
+  font-size:1rem;
+  line-height:1;
+  text-shadow:
+    0 0 6px #fff,
+    0 0 14px #ff9bb6,
+    0 0 24px rgba(255,91,139,.85);
+  transform:translate(-50%,-50%) scale(.25);
+  opacity:0;
+}
+.hidden-heart.collecting .collect-spark {
+  animation: collectSparkBurst .7s cubic-bezier(.16,.8,.25,1) var(--sd) forwards;
+}
+@keyframes collectSparkBurst {
+  0% {
+    opacity:0;
+    transform:translate(-50%,-50%) scale(.2) rotate(0deg);
+  }
+  18% {
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1.25) rotate(10deg);
+  }
+  100% {
+    opacity:0;
+    transform:translate(
+      calc(-50% + var(--sx)),
+      calc(-50% + var(--sy))
+    ) scale(.45) rotate(var(--sr));
   }
 }
 
