@@ -191,9 +191,6 @@
       } catch {}
     }
 
-    try {
-      if (typeof navigator.vibrate === 'function') navigator.vibrate(0);
-    } catch {}
   };
 
   const startHoldRampSound = durationMs => {
