@@ -880,8 +880,8 @@ button { -webkit-tap-highlight-color: transparent; }
   animation-delay: calc(var(--i,0) * 40ms);
 }
 @keyframes imageBreath {
-  from { background-size:100%; }
-  to { background-size:104%; }
+  from { background-position:48% 50%; }
+  to { background-position:52% 48%; }
 }
 @keyframes emojiFloat {
   50% { transform:translateY(-5px) rotate(4deg); }
@@ -997,3 +997,8 @@ button { -webkit-tap-highlight-color: transparent; }
   from { transform:scale(1.02) translate3d(-.5%,0,0); }
   to { transform:scale(1.07) translate3d(.8%,-.6%,0); }
 }
+
+
+/* Each chapter gently settles into a screen without hard-locking the scroll. */
+main { scroll-snap-type: y proximity; }
+.scene { scroll-snap-align: start; scroll-snap-stop: normal; }
