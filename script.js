@@ -436,29 +436,38 @@
     }
   };
 
-  const loveMessageForCount = count => {
-    const messages = [
-      'Find the first glowing heart ♥',
-      'I love you ❤️',
-      'I love youuu ❤️',
-      'I love youuuu ❤️',
-      'I love youuuuu ❤️',
-      'I love youuuuuu ∞ ❤️'
-    ];
-    return messages[Math.max(0, Math.min(5, count))];
+  const loveMessages = [
+    'I love you ❤️',
+    'I love youuu ❤️',
+    'I love youuuu ❤️',
+    'I love youuuuu ❤️',
+    'I love youuuuuu ∞ ❤️'
+  ];
+
+  const renderLoveMessages = (root, count) => {
+    if (!root) return;
+    if (count <= 0) {
+      root.innerHTML = '<span class="love-prompt">Find the first glowing heart ♥</span>';
+      return;
+    }
+
+    root.innerHTML = loveMessages
+      .slice(0, Math.min(5, count))
+      .map((line, index) => `<div class="love-line" style="--love-delay:${index * 70}ms">${line}</div>`)
+      .join('');
   };
 
   const setupHiddenHearts = () => {
     const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'museum'];
-    let savedHearts = [];
-    try { savedHearts = JSON.parse(safeStorageGet('anniv-hearts-v3', '[]')); } catch {}
-    const found = new Set(Array.isArray(savedHearts) ? savedHearts : []);
+    const found = new Set();
     const template = $('#hiddenHeartTemplate');
     const score = $('#heartScore');
     const message = $('#secretMessage');
 
+    renderLoveMessages(message, 0);
+    score.textContent = '0';
+
     targets.forEach((id, i) => {
-      if (found.has(i)) return;
       const section = document.getElementById(id);
       if (!section) return;
 
@@ -469,27 +478,22 @@
       section.appendChild(heart);
 
       heart.addEventListener('click', () => {
-        if (heart.classList.contains('collecting')) return;
+        if (heart.classList.contains('collecting') || found.has(i)) return;
+
         playSound('sparkle');
         found.add(i);
-        safeStorageSet('anniv-hearts-v3', JSON.stringify([...found]));
-        score.textContent = found.size;
-        message.textContent = loveMessageForCount(found.size);
+        score.textContent = String(found.size);
+        renderLoveMessages(message, found.size);
+
         createHeartSparkBurst(heart);
         heart.classList.add('collecting');
         setTimeout(() => heart.remove(), 920);
 
         if (found.size === targets.length) {
-          setTimeout(() => {
-            message.textContent = loveMessageForCount(5);
-            playSound('open');
-          }, 1200);
+          setTimeout(() => playSound('open'), 720);
         }
       });
     });
-
-    score.textContent = found.size;
-    message.textContent = loveMessageForCount(found.size);
   };
 
   const buildFuture = () => {
