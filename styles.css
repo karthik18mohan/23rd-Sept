@@ -1002,3 +1002,312 @@ button { -webkit-tap-highlight-color: transparent; }
 /* Each chapter gently settles into a screen without hard-locking the scroll. */
 main { scroll-snap-type: y proximity; }
 .scene { scroll-snap-align: start; scroll-snap-stop: normal; }
+
+/* USER LAYOUT REFINEMENTS V2 */
+
+/* Revert THIS IS US to the earlier, roomy staggered layout. */
+#this-is-us {
+  min-height: auto;
+  padding-top: 110px;
+  padding-bottom: 130px;
+}
+#this-is-us .us-montage {
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:clamp(18px,3vw,34px);
+  margin-top:58px;
+}
+#this-is-us .us-card {
+  border-radius:30px;
+  overflow:hidden;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 22px 70px rgba(0,0,0,.2);
+}
+#this-is-us .us-card:nth-child(3n + 1) { grid-column:span 7; }
+#this-is-us .us-card:nth-child(3n + 2) { grid-column:span 5; margin-top:75px; }
+#this-is-us .us-card:nth-child(3n + 3) { grid-column:3 / span 8; }
+#this-is-us .us-photo { aspect-ratio:16/11; }
+#this-is-us .us-copy { padding:25px 26px 30px; }
+#this-is-us .us-copy h3 {
+  font-size:clamp(1.8rem,3vw,3rem);
+  margin:0 0 10px;
+}
+#this-is-us .us-copy p {
+  font-size:1rem;
+  line-height:1.65;
+}
+
+/* Camera Roll: all three categories in one screen, 2 + 1 arrangement. */
+#camera-roll {
+  height:100svh;
+  min-height:100svh;
+  padding-top:34px;
+  padding-bottom:30px;
+}
+#camera-roll .section-wrap {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+#camera-roll .display {
+  font-size:clamp(2.6rem,5vw,4.8rem);
+  margin-bottom:6px;
+}
+#camera-roll .camera-groups {
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:14px;
+}
+#camera-roll .camera-group {
+  min-height:0;
+  margin:0;
+  padding:12px;
+  border-radius:22px;
+  background:rgba(255,255,255,.38);
+  border:1px solid rgba(93,55,68,.08);
+  box-shadow:0 14px 35px rgba(86,54,64,.08);
+  overflow:hidden;
+}
+#camera-roll .camera-group:nth-child(3) {
+  grid-column:1 / -1;
+  width:72%;
+  justify-self:center;
+}
+#camera-roll .camera-heading {
+  grid-template-columns:32px 1fr;
+  gap:7px;
+  margin-bottom:7px;
+}
+#camera-roll .camera-heading > span { font-size:1.4rem; }
+#camera-roll .camera-heading h3 {
+  font-size:clamp(.95rem,1.6vw,1.35rem);
+  margin:0 0 2px;
+}
+#camera-roll .camera-heading p { font-size:.62rem; }
+#camera-roll .camera-row {
+  height:calc(100% - 48px);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+#camera-roll .camera-photo,
+#camera-roll .camera-photo:nth-child(2),
+#camera-roll .camera-photo:nth-child(3) {
+  width:100%;
+  height:100%;
+  min-height:0;
+  aspect-ratio:auto;
+  margin:0;
+  border-width:4px;
+}
+
+/* What Changed: use the screen with six balanced cards. */
+#changed {
+  height:100svh;
+  min-height:100svh;
+  padding-top:38px;
+  padding-bottom:38px;
+}
+#changed .section-wrap {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#changed .changed-lines {
+  flex:1;
+  min-height:0;
+  width:100%;
+  padding:18px 0 0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  gap:12px;
+}
+#changed .changed-line,
+#changed .changed-final {
+  grid-column:auto;
+  margin:0;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:24px;
+  background:linear-gradient(145deg,rgba(255,255,255,.88),rgba(247,226,232,.7));
+  border:1px solid rgba(112,73,84,.08);
+  box-shadow:0 16px 35px rgba(92,57,68,.08);
+  font-size:clamp(1.35rem,2.5vw,2.4rem);
+  line-height:1.02;
+}
+
+/* Drag through time starts fully left. */
+#then-now #compareNew { width:0; }
+#then-now #compareDivider { left:0; }
+
+/* Future: larger cards, less empty top, 3 + 2 composition. */
+#future {
+  height:100svh;
+  min-height:100svh;
+  padding-top:28px;
+  padding-bottom:28px;
+}
+#future .section-wrap {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#future .future-prelude {
+  font-size:clamp(1.45rem,2.5vw,2.35rem);
+  margin:0 0 2px;
+}
+#future .display {
+  font-size:clamp(2.6rem,5.2vw,5rem);
+  margin-bottom:8px;
+}
+#future .future-polaroids {
+  width:min(920px,100%);
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:14px;
+  margin:18px auto 0;
+}
+#future .future-card.future-text-card {
+  min-height:185px;
+  padding:20px 18px;
+}
+#future .future-card.future-text-card:nth-child(4) { grid-column:2 / span 2; }
+#future .future-card.future-text-card:nth-child(5) { grid-column:4 / span 2; }
+#future .future-card.future-text-card p {
+  font-size:clamp(1.25rem,2vw,1.7rem);
+}
+#future .future-ending { margin-top:14px; }
+
+/* Hidden-heart payoff gets stronger with the count. */
+#secrets .secret-message {
+  font-size:clamp(1.5rem,3vw,2.4rem);
+  min-height:82px;
+  display:grid;
+  place-items:center;
+}
+
+/* Letter stays visually attached to the envelope and closes when scrolled away. */
+#letter {
+  height:100svh;
+  min-height:100svh;
+  padding-top:32px;
+  padding-bottom:32px;
+}
+#letter .section-wrap {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#letter .envelope { margin-top:22px; }
+
+/* Finale and Chapter 6 are truly edge-to-edge full screens. */
+#finale {
+  width:100%;
+  height:100svh;
+  min-height:100svh;
+  padding:0 20px;
+}
+#finale .finale-copy {
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#epilogue {
+  width:100vw;
+  height:100svh;
+  min-height:100svh;
+  max-height:100svh;
+  padding:0 24px;
+}
+#epilogue .epilogue-inner {
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+/* Restore roomy This Is Us on phones too, as requested. */
+@media (max-width:760px) {
+  #this-is-us {
+    padding-top:64px;
+    padding-bottom:80px;
+  }
+  #this-is-us .us-montage {
+    display:block;
+    margin-top:34px;
+  }
+  #this-is-us .us-card,
+  #this-is-us .us-card:nth-child(3n + 1),
+  #this-is-us .us-card:nth-child(3n + 2),
+  #this-is-us .us-card:nth-child(3n + 3) {
+    margin:0 0 24px;
+  }
+  #this-is-us .us-photo { aspect-ratio:4/3; }
+  #this-is-us .us-copy { padding:18px 18px 22px; }
+  #this-is-us .us-copy h3 { font-size:1.55rem; }
+  #this-is-us .us-copy p { font-size:.9rem; }
+
+  #camera-roll { padding-top:24px; padding-bottom:22px; }
+  #camera-roll .camera-groups {
+    gap:7px;
+    margin-top:8px;
+  }
+  #camera-roll .camera-group {
+    padding:7px;
+    border-radius:15px;
+  }
+  #camera-roll .camera-group:nth-child(3) { width:78%; }
+  #camera-roll .camera-heading {
+    grid-template-columns:20px 1fr;
+    gap:4px;
+    margin-bottom:4px;
+  }
+  #camera-roll .camera-heading > span { font-size:.92rem; }
+  #camera-roll .camera-heading h3 { font-size:.72rem; }
+  #camera-roll .camera-heading p { display:none; }
+  #camera-roll .camera-row {
+    height:calc(100% - 24px);
+    gap:3px;
+  }
+  #camera-roll .camera-photo { border-width:2px; }
+
+  #changed { padding-top:24px; padding-bottom:24px; }
+  #changed .changed-lines {
+    grid-template-columns:repeat(2,1fr);
+    grid-template-rows:repeat(3,1fr);
+    gap:7px;
+    padding-top:10px;
+  }
+  #changed .changed-line {
+    padding:10px;
+    border-radius:16px;
+    font-size:clamp(1.08rem,4.7vw,1.45rem);
+  }
+
+  #future { padding-top:22px; padding-bottom:22px; }
+  #future .future-prelude { font-size:1.15rem; }
+  #future .display { font-size:clamp(2.2rem,9vw,3.3rem); }
+  #future .future-polaroids { gap:7px; margin-top:10px; }
+  #future .future-card.future-text-card {
+    min-height:150px;
+    padding:13px 10px;
+  }
+  #future .future-card.future-text-card p { font-size:1.05rem; }
+  #future .future-ending { margin-top:9px; }
+
+  #finale { padding:0 16px; }
+}
