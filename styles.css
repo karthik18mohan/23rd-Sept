@@ -1500,3 +1500,145 @@ main { scroll-snap-type: y proximity; }
     font-size:clamp(1.25rem,6vw,1.75rem);
   }
 }
+
+/* STABILITY + FEEDBACK PASS V4 */
+
+/* Hard-stop horizontal canvas overflow on iOS/Safari and Android/Chrome. */
+html,
+body {
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden !important;
+  overflow-x:clip !important;
+}
+body { position:relative; }
+main,
+.scene,
+.section-wrap {
+  max-width:100%;
+}
+main {
+  width:100%;
+  overflow-x:hidden;
+  overflow-x:clip;
+}
+#camera-roll,
+#camera-roll > .section-wrap,
+#camera-roll .camera-groups,
+#epilogue {
+  overflow-x:hidden !important;
+  overflow-x:clip !important;
+}
+.burst,
+.confetti {
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+/* Fix Camera Roll heading alignment: reveal transforms no longer shift it sideways. */
+#camera-roll > .section-wrap > .eyebrow,
+#camera-roll > .section-wrap > .display {
+  left:0 !important;
+  right:0 !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  transform:none;
+}
+#camera-roll > .section-wrap > .eyebrow.reveal:not(.visible),
+#camera-roll > .section-wrap > .display.reveal:not(.visible) {
+  transform:translateY(24px) scale(.985);
+}
+#camera-roll > .section-wrap > .eyebrow.reveal.visible,
+#camera-roll > .section-wrap > .display.reveal.visible {
+  transform:none;
+}
+
+/* Strong, repeatable in/out motion for every tile. Individual translate/scale
+   properties preserve each tile's own rotate/parallax transform. */
+.us-card.reveal,
+.know-card.reveal,
+.camera-photo.reveal,
+.message-card.reveal,
+.changed-line.reveal,
+.reason-heart.reveal,
+.museum-card.reveal,
+.future-card {
+  opacity:0;
+  translate:0 30px;
+  scale:.94;
+  filter:blur(5px);
+  transition:
+    opacity .58s ease var(--reveal-delay,0ms),
+    translate .72s cubic-bezier(.2,.8,.2,1) var(--reveal-delay,0ms),
+    scale .72s cubic-bezier(.2,.8,.2,1) var(--reveal-delay,0ms),
+    filter .58s ease var(--reveal-delay,0ms);
+  will-change:opacity,translate,scale,filter;
+}
+.us-card.reveal.visible,
+.know-card.reveal.visible,
+.camera-photo.reveal.visible,
+.message-card.reveal.visible,
+.changed-line.reveal.visible,
+.reason-heart.reveal.visible,
+.museum-card.reveal.visible,
+.future-card.visible {
+  opacity:1;
+  translate:0 0;
+  scale:1;
+  filter:blur(0);
+}
+.us-card.reveal.exit-up:not(.visible),
+.know-card.reveal.exit-up:not(.visible),
+.camera-photo.reveal.exit-up:not(.visible),
+.message-card.reveal.exit-up:not(.visible),
+.changed-line.reveal.exit-up:not(.visible),
+.reason-heart.reveal.exit-up:not(.visible),
+.museum-card.reveal.exit-up:not(.visible),
+.future-card.exit-up:not(.visible) {
+  translate:0 -26px;
+  scale:.96;
+}
+
+.reveal {
+  transition:
+    opacity .62s ease var(--reveal-delay,0ms),
+    transform .72s cubic-bezier(.2,.8,.2,1) var(--reveal-delay,0ms),
+    filter .62s ease var(--reveal-delay,0ms);
+}
+.reveal:not(.visible) { filter:blur(2.5px); }
+.reveal.visible { filter:blur(0); }
+.reveal.exit-up:not(.visible) {
+  transform:translateY(-24px) scale(.99);
+}
+
+/* Make the long-press feel progressively more alive. */
+.hold-heart {
+  transition:filter .18s ease, transform .18s ease;
+}
+.hold-button:active .hold-heart {
+  transform:scale(1.08);
+  filter:drop-shadow(0 0 26px rgba(255,148,177,.78));
+}
+
+button,
+input[type="range"] {
+  touch-action:manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .us-card.reveal,
+  .know-card.reveal,
+  .camera-photo.reveal,
+  .message-card.reveal,
+  .changed-line.reveal,
+  .reason-heart.reveal,
+  .museum-card.reveal,
+  .future-card {
+    opacity:1 !important;
+    translate:none !important;
+    scale:1 !important;
+    filter:none !important;
+  }
+}
