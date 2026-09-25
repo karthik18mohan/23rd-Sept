@@ -5,58 +5,52 @@ You should not need to touch any file outside **EDIT_HERE**.
 ## 1. Text
 Open **content.js**.
 
-Every part is numbered in the same order as the website:
-- 00 basic details
-- 01 cover
-- 02 This Is Us
-- 03 Things I Know About You
-- 04 Inside Jokes
-- 05 Camera Roll
-- 06 Messages
-- 07 What Changed
-- 08 Couple Quiz
-- 09 25 Tiny Things
-- 10 Museum of Us
-- 11 Then / Now
-- 12 Future
-- 13 Audio
-- 14 Letter
-- 15 Finale
+Everything personal is grouped in website order:
+- basic details + opening
+- cover
+- This Is Us
+- Things I Know About You
+- Camera Roll
+- Messages
+- What Changed
+- Couple Quiz
+- 25 Tiny Things
+- Museum of Us
+- Then / Now
+- Future
+- Final Letter
+- Finale
+- 5 hidden-heart messages
 
 Search for **EDIT:** and replace those lines.
 
 ## 2. Photos
-Put photos inside **EDIT_HERE/photos/** using the exact filenames already listed there.
+Your current personal images can stay in **EDIT_HERE/ics/**.
 
-You do NOT need every photo immediately. Missing photos show a neat placeholder instead of breaking the site.
+If you add new named photos, you can also use **EDIT_HERE/photos/** and update the matching path in `content.js`.
+
+Missing photos show a neat placeholder instead of breaking the site.
 
 ## 3. WhatsApp / message screenshots
-Put them inside **EDIT_HERE/messages/**:
-- 01-funny-chat.jpg
-- 02-random-chat.jpg
-- 03-sweet-chat.jpg
-- 04-old-chat.jpg
+Keep screenshots in **EDIT_HERE/messages/** or point their entries in `content.js` to images in `EDIT_HERE/ics/`.
 
-## 4. Music / voice note
-Put your audio inside **EDIT_HERE/music/** and name it:
-- our-song.mp3
+## 4. Sounds
+You do **not** need to upload music anymore.
 
-It can be a song or your recorded voice note.
+The website generates its own subtle sounds for:
+- holding/opening the first heart
+- finding hidden hearts
+- opening the 25 tiny hearts
+- quiz taps
+- opening/closing the letter
 
-## 5. Fastest way to personalize
-Do this first:
-1. partnerName
-2. 00-cover.jpg
-3. 01-us-01.jpg to 01-us-06.jpg
-4. Things I Know About You
-5. Inside Jokes
-6. 4 chat screenshots
-7. 25 Tiny Things
-8. final letter
-9. 08-finale.jpg
-10. our-song.mp3
-
-That is enough for the site to feel personal.
+## 5. Future section
+The five text-only future moments are:
+1. Our engagement
+2. Our trip
+3. Our late night drives
+4. Our beach sunset view
+5. The next version of us
 
 ## IMPORTANT PRIVACY
 This GitHub repository is currently public. If these are private couple photos/messages, make the repo private before uploading them.
