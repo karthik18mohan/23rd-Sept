@@ -1,7 +1,41 @@
 (() => {
   const data = window.ANNIVERSARY;
   const $ = (q, root = document) => root.querySelector(q);
-  const $$ = (q, root = document) => [...root.querySelectorAll(q)];
+  const $ = (q, root = document) => [...root.querySelectorAll(q)];
+
+  const revealAll = () => {
+    try {
+      $('.reveal,.future-card').forEach(el => el.classList.add('visible'));
+      document.documentElement.classList.add('js-fallback');
+    } catch {}
+  };
+
+  const safeRun = (name, fn) => {
+    try {
+      return fn();
+    } catch (error) {
+      console.error(`[anniversary] ${name} failed`, error);
+      revealAll();
+      return null;
+    }
+  };
+
+  const safeStorageGet = (key, fallback = '[]') => {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const safeStorageSet = (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch {}
+  };
+
+  window.addEventListener('error', revealAll);
+  window.addEventListener('unhandledrejection', revealAll);
 
   const setText = (selector, value) => {
     const el = $(selector);
@@ -377,7 +411,9 @@
 
   const setupHiddenHearts = () => {
     const targets = ['things-i-know', 'camera-roll', 'messages', 'changed', 'museum'];
-    const found = new Set(JSON.parse(localStorage.getItem('anniv-hearts-v3') || '[]'));
+    let savedHearts = [];
+    try { savedHearts = JSON.parse(safeStorageGet('anniv-hearts-v3', '[]')); } catch {}
+    const found = new Set(Array.isArray(savedHearts) ? savedHearts : []);
     const template = $('#hiddenHeartTemplate');
     const score = $('#heartScore');
     const message = $('#secretMessage');
@@ -397,7 +433,7 @@
         if (heart.classList.contains('collecting')) return;
         playSound('sparkle');
         found.add(i);
-        localStorage.setItem('anniv-hearts-v3', JSON.stringify([...found]));
+        safeStorageSet('anniv-hearts-v3', JSON.stringify([...found]));
         score.textContent = found.size;
         message.textContent = `♥ ${data.hiddenSecrets[i]}`;
         heart.classList.add('collecting');
@@ -451,11 +487,15 @@
   };
 
   const observers = () => {
-    const io = new IntersectionObserver(entries => entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    }), { threshold: .12, rootMargin: '0px 0px -7%' });
-
-    $$('.reveal,.future-card').forEach(el => io.observe(el));
+    const revealTargets = $('.reveal,.future-card');
+    if (!('IntersectionObserver' in window)) {
+      revealTargets.forEach(el => el.classList.add('visible'));
+    } else {
+      const io = new IntersectionObserver(entries => entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      }), { threshold: .12, rootMargin: '0px 0px -7%' });
+      revealTargets.forEach(el => io.observe(el));
+    }
 
     window.addEventListener('scroll', () => {
       const max = document.documentElement.scrollHeight - innerHeight;
@@ -481,23 +521,23 @@
     });
   };
 
-  setNames();
-  photoFallback($('#coverPhoto'), data.cover.photo, '00-cover.jpg');
-  createIntro();
-  buildCounter();
-  buildUsMontage();
-  buildKnowGrid();
-  buildCameraRoll();
-  buildMessages();
-  buildChanged();
-  buildQuiz();
-  buildTinyThings();
-  buildMuseum();
-  setupCompare();
-  setupHiddenHearts();
-  buildFuture();
-  buildLetter();
-  setupFinale();
-  observers();
-  heartTrail();
+  safeRun('names', setNames);
+  safeRun('cover photo', () => photoFallback($('#coverPhoto'), data.cover.photo, '00-cover.jpg'));
+  safeRun('intro', createIntro);
+  safeRun('counter', buildCounter);
+  safeRun('this is us', buildUsMontage);
+  safeRun('things I know', buildKnowGrid);
+  safeRun('camera roll', buildCameraRoll);
+  safeRun('messages', buildMessages);
+  safeRun('what changed', buildChanged);
+  safeRun('quiz', buildQuiz);
+  safeRun('tiny things', buildTinyThings);
+  safeRun('museum', buildMuseum);
+  safeRun('compare', setupCompare);
+  safeRun('hidden hearts', setupHiddenHearts);
+  safeRun('future', buildFuture);
+  safeRun('letter', buildLetter);
+  safeRun('finale', setupFinale);
+  safeRun('observers', observers);
+  safeRun('heart trail', heartTrail);
 })();
