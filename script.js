@@ -15,7 +15,6 @@
       return fn();
     } catch (error) {
       console.error(`[anniversary] ${name} failed`, error);
-      revealAll();
       return null;
     }
   };
@@ -33,9 +32,6 @@
       localStorage.setItem(key, value);
     } catch {}
   };
-
-  window.addEventListener('error', revealAll);
-  window.addEventListener('unhandledrejection', revealAll);
 
   const setText = (selector, value) => {
     const el = $(selector);
@@ -103,6 +99,13 @@
   const ensureAudioContext = async () => {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return null;
+
+    try {
+      if (navigator.audioSession && 'type' in navigator.audioSession) {
+        navigator.audioSession.type = 'playback';
+      }
+    } catch {}
+
     if (!audioContext) audioContext = new AudioCtx();
     if (audioContext.state === 'suspended') {
       try { await audioContext.resume(); } catch {}
@@ -152,6 +155,75 @@
     }).catch(() => {});
   };
 
+
+  const haptic = kind => {
+    const patterns = {
+      tick: 10,
+      light: 14,
+      medium: 24,
+      success: [18, 28, 38],
+      complete: [20, 20, 28, 22, 55]
+    };
+
+    try {
+      if (typeof navigator.vibrate === 'function') {
+        return navigator.vibrate(patterns[kind] || patterns.light);
+      }
+    } catch {}
+    return false;
+  };
+
+  let activeHoldSound = null;
+  let holdSoundToken = 0;
+
+  const stopHoldRampSound = () => {
+    holdSoundToken += 1;
+    const current = activeHoldSound;
+    activeHoldSound = null;
+
+    if (current) {
+      try {
+        const now = current.ctx.currentTime;
+        current.gain.gain.cancelScheduledValues(now);
+        current.gain.gain.setValueAtTime(Math.max(0.0001, current.gain.gain.value), now);
+        current.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+        current.oscillator.stop(now + 0.055);
+      } catch {}
+    }
+
+    try {
+      if (typeof navigator.vibrate === 'function') navigator.vibrate(0);
+    } catch {}
+  };
+
+  const startHoldRampSound = durationMs => {
+    stopHoldRampSound();
+    const token = ++holdSoundToken;
+
+    ensureAudioContext().then(ctx => {
+      if (!ctx || ctx.state !== 'running' || token !== holdSoundToken) return;
+
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const now = ctx.currentTime;
+      const duration = Math.max(0.25, durationMs / 1000);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(145, now);
+      oscillator.frequency.exponentialRampToValueAtTime(760, now + duration);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.018, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.082, now + duration);
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start(now);
+
+      activeHoldSound = { ctx, oscillator, gain, token };
+    }).catch(() => {});
+  };
+
   // Prime Web Audio on the first real user gesture. This is especially
   // important on iPhone/Safari, which keeps AudioContext suspended otherwise.
   const unlockAudio = () => { ensureAudioContext().catch(() => {}); };
@@ -165,10 +237,13 @@
     let frame = null;
     let completed = false;
     let activePointerId = null;
+    let hapticStep = 0;
     const duration = 1500;
 
     const reset = () => {
       cancelAnimationFrame(frame);
+      stopHoldRampSound();
+      hapticStep = 0;
       start = 0;
       btn.style.setProperty('--hold', '0%');
     };
@@ -177,8 +252,17 @@
       if (!start) start = t;
       const pct = Math.min(100, ((t - start) / duration) * 100);
       btn.style.setProperty('--hold', `${pct}%`);
+
+      const nextStep = pct >= 75 ? 3 : pct >= 50 ? 2 : pct >= 25 ? 1 : 0;
+      if (nextStep > hapticStep) {
+        hapticStep = nextStep;
+        haptic('tick');
+      }
+
       if (pct >= 100 && !completed) {
         completed = true;
+        stopHoldRampSound();
+        haptic('complete');
         $('.hold-heart', btn).textContent = '♥';
         playSound('open');
         burstHearts($('#burst'), 36);
@@ -195,7 +279,9 @@
     const down = e => {
       if (completed) return;
       e.preventDefault();
-      playSound('hold');
+      hapticStep = 0;
+      haptic('light');
+      startHoldRampSound(duration);
       if (e.pointerId !== undefined) {
         activePointerId = e.pointerId;
         try { btn.setPointerCapture(e.pointerId); } catch {}
@@ -357,6 +443,7 @@
         </div>
         <div class="quiz-answer" id="quizAnswer"></div>`;
       $$('.quiz-choices button', root).forEach(btn => btn.addEventListener('click', () => {
+        haptic('light');
         playSound('tap');
         $$('.quiz-choices button', root).forEach(b => { b.disabled = true; });
         $('#quizAnswer').textContent = q.answer;
@@ -369,9 +456,10 @@
 
   const buildTinyThings = () => {
     const root = $('#reasonGrid');
-    root.innerHTML = data.tinyThings.map((_, i) => `<button class="reason-heart" data-reason="${i}" aria-label="Tiny thing ${i + 1}">♥</button>`).join('');
+    root.innerHTML = data.tinyThings.map((_, i) => `<button class="reason-heart reveal" data-reason="${i}" aria-label="Tiny thing ${i + 1}" style="--i:${i}">♥</button>`).join('');
     const modal = $('#reasonModal');
     $$('.reason-heart', root).forEach(btn => btn.addEventListener('click', () => {
+      haptic('light');
       playSound('heart');
       btn.classList.remove('heart-tapped');
       void btn.offsetWidth;
@@ -415,7 +503,15 @@
       cover.style.width = `${range.value}%`;
       divider.style.left = `${range.value}%`;
     };
-    range.addEventListener('input', sync);
+    let lastHapticBucket = -1;
+    range.addEventListener('input', () => {
+      sync();
+      const bucket = Math.round(Number(range.value) / 25);
+      if (bucket !== lastHapticBucket) {
+        lastHapticBucket = bucket;
+        haptic('tick');
+      }
+    });
     sync();
   };
 
@@ -480,6 +576,7 @@
       heart.addEventListener('click', () => {
         if (heart.classList.contains('collecting') || found.has(i)) return;
 
+        haptic('success');
         playSound('sparkle');
         found.add(i);
         score.textContent = String(found.size);
@@ -516,6 +613,7 @@
     };
 
     env.addEventListener('click', () => {
+      haptic('medium');
       playSound('paper');
       const open = env.classList.toggle('open');
       env.setAttribute('aria-expanded', String(open));
@@ -539,6 +637,8 @@
     photoFallback($('#finaleBg'), data.finale.photo, '08-finale.jpg');
     const epi = $('#epilogue');
     $('#chapterSix').addEventListener('click', () => {
+      haptic('success');
+      playSound('open');
       burstHearts($('#confetti'), 48);
       setTimeout(() => {
         epi.classList.add('open');
@@ -582,9 +682,23 @@
       revealTargets.forEach(el => el.classList.add('visible'));
     } else {
       const io = new IntersectionObserver(entries => entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      }), { threshold: .12, rootMargin: '0px 0px -7%' });
-      revealTargets.forEach(el => io.observe(el));
+        const showing = entry.isIntersecting && entry.intersectionRatio >= 0.08;
+        entry.target.classList.toggle('visible', showing);
+
+        if (!showing && entry.boundingClientRect.bottom < 0) {
+          entry.target.classList.add('exit-up');
+        } else {
+          entry.target.classList.remove('exit-up');
+        }
+      }), {
+        threshold: [0, 0.08, 0.18, 0.35],
+        rootMargin: '4% 0px -4% 0px'
+      });
+
+      revealTargets.forEach((el, index) => {
+        el.style.setProperty('--reveal-delay', `${(index % 6) * 35}ms`);
+        io.observe(el);
+      });
     }
 
     window.addEventListener('scroll', () => {
